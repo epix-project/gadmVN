@@ -28,6 +28,21 @@ gadm1r <- SpatialPolygonsDataFrame(gadm1r,dataframe,"VARNAME_1")
 
 # Now that provincesVN0 is fixed, we can thin it:
 gadm1 <- thinnedSpatialPoly(gadm1r,tolerance)
+# Adding a new column name for the provinces names:
+sel <- c(1,3:15,17,16,18:28,30:58,29,59:62,2,63)
+hash <- c(              "Bac Kan|Bac Can" = "Bac Kan",
+                   "Da Nang City|Da Nang" = "Da Nang",
+                        "Dak Lak|Dac Lac" = "Dak Lak",
+                               "Dac Nong" = "Dak Nong",
+                      "Ha Noi City|Hanoi" = "Hanoi",
+                "Hai Phong City|Haiphong" = "Hai Phong",
+           "Ho Chi Minh City|Ho Chi Minh" = "Tp. Ho Chi Minh",
+          "Ba Ria - VTau|Ba Ria-Vung Tau" = "Vung Tau - Ba Ria")
+tmp <- gadm1$VARNAME_1
+tmp <- tmp[!tmp %in% names(hash)]
+hash <- c(hash,setNames(tmp,tmp))
+gadm1$province <- hash[gadm1$VARNAME_1]
+gadm1r$province <- hash[gadm1r$VARNAME_1]
 # Saving:
 devtools::use_data(gadm0r,gadm0,gadm1r,gadm1,overwrite=T)
 # cleaning:
