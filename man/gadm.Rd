@@ -11,7 +11,7 @@ gadm(date = "2015-01-01", level = "provinces", resolution = "low")
 }
 \arguments{
 \item{date}{Text in the "YYYY-MM-DD" format. For example "2015-01-17" for the
-17th of January 2017.}
+17th of January 2017. By default "2015-01-01".}
 
 \item{level}{Text ("country" or "provinces"). By default "provinces".}
 

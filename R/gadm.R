@@ -14,19 +14,6 @@
 #' @param resolution Text ("low" or "high"). By default "low".
 #' @source GADM data base from \url{www.gadm.org}.
 #' @author Marc Choisy
-#' @example
-#' ## Some basic functions (sp methods):
-#' prov_viet <- gadm()
-#' slotNames(prov_viet)
-#' length(prov_viet)
-#' dim(prov_viet)
-#' names(prov_viet)
-#' prov_viet$province
-#' bbox(prov_viet)
-#' coordinates(prov_viet)
-#' plot(prov_viet)
-#' plot(subset(prov_viet,province=="Nghe An"),add=T,col="red")
-#' ## The history of provinces delimitations:
 #' @export
 gadm <- function(date="2015-01-01",level="provinces",resolution="low") {
   dates <- as.Date(paste0(c(1990,1991,1992,1997,2004,2008),"-01-01"))
