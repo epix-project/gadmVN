@@ -9,28 +9,7 @@ load("VNM_adm2.RData") # the 64 provinces from 2004 to 2007
 gadm1_04_07r <- gadm
 
 
-# --------------------------- Fixing gadm1_08_20r: -----------------------------
-# The object gadm1_08_20r cannot be thinned right away because there is an issue
-# in this object: 2 provinces are duplicated. The code below fixes that issue:
-dataframe <- gadm1_08_20r@data # the data frame of the provinces
-varname_1 <- dataframe$VARNAME_1 # the names of the provinces
-# Merging the polygons by provinces.
-# This has the side effects of
-#   * removing the data frame;
-#   * putting varname_1 as IDs of the polygons.
-gadm1_08_20r <- unionSpatialPolygons(gadm1_08_20r,varname_1)
-# thinning gadm1_08_20r:
-dataframe <- subset(dataframe,CCA_1!="0") # remove the provinces with CCA_1 = 0
-# Putting back the fixed data frame (i.e. fixing the first side effect).
-# This in turn has the side effects of
-#   * changing the order of the rows of the data frame so that its variable
-#     VARNAME_1 is in the same order as the ID of the polygons);
-#   * putting the variable "VARNAME_1" as the rownames of the data frame.
-gadm1_08_20r <- SpatialPolygonsDataFrame(gadm1_08_20r,dataframe,"VARNAME_1")
-
-
-# --------------------- Adding a new province variable: ------------------------
-# The hash table for the new provinces names variable:
+# The hash table for the new provinces names variable: -------------------------
 dictionary <- c(              "Bac Kan|Bac Can" = "Bac Kan",
                          "Da Nang City|Da Nang" = "Da Nang",
                               "Dak Lak|Dac Lac" = "Dak Lak",
@@ -39,11 +18,41 @@ dictionary <- c(              "Bac Kan|Bac Can" = "Bac Kan",
                       "Hai Phong City|Haiphong" = "Hai Phong",
                  "Ho Chi Minh City|Ho Chi Minh" = "Tp. Ho Chi Minh",
                 "Ba Ria - VTau|Ba Ria-Vung Tau" = "Vung Tau - Ba Ria")
-tmp <- gadm1_07_04r$VARNAME_2
-tmp <- tmp[!tmp %in% names(dictionary)]
+
+
+# --------------------------- Fixing gadm1_08_20r: -----------------------------
+# The object gadm1_08_20r cannot be thinned right away because there is an issue
+# in this object: 2 provinces are duplicated. The code below fixes that issue:
+dataframe <- gadm1_08_20r@data # the data frame of the provinces
+province <- dataframe$VARNAME_1 # the names of the provinces
+# Merging the polygons by provinces.
+# This has the side effects of
+#   * removing the data frame;
+#   * putting province as IDs of the polygons.
+tmp <- province[!province %in% names(dictionary)]
 hash <- c(dictionary,setNames(tmp,tmp))
-gadm1_08_20r$province <- hash[gadm1_08_20r$VARNAME_1]
-gadm1_07_04r$province <- hash[gadm1_07_04r$VARNAME_2]
+province <- hash[province]
+dataframe$province <- province
+gadm1_08_20r <- unionSpatialPolygons(gadm1_08_20r,province)
+# thinning gadm1_08_20r:
+dataframe <- subset(dataframe,CCA_1!="0") # remove the provinces with CCA_1 = 0
+# Putting back the fixed data frame (i.e. fixing the first side effect).
+# This in turn has the side effects of
+#   * changing the order of the rows of the data frame so that its variable
+#     "province" is in the same order as the ID of the polygons);
+#   * putting the variable "province" as the rownames of the data frame.
+gadm1_08_20r <- SpatialPolygonsDataFrame(gadm1_08_20r,dataframe,"province")
+
+
+# Same for gadm1_04_07r: -------------------------------------------------------
+dataframe <- gadm1_04_07r@data
+province <- dataframe$VARNAME_2
+tmp <- province[!province %in% names(dictionary)]
+hash <- c(dictionary,setNames(tmp,tmp))
+province <- hash[province]
+dataframe$province <- province
+gadm1_04_07r <- unionSpatialPolygons(gadm1_04_07r,province)
+gadm1_04_07r <- SpatialPolygonsDataFrame(gadm1_04_07r,dataframe,"province")
 
 
 # ------------------ Generating the historical provinces maps: -----------------
@@ -137,4 +146,4 @@ devtools::use_data(gadm0r,gadm0,gadm1_08_20r,gadm1_08_20,gadm1_04_07,gadm1_04_07
 
 
 # --------------------------------- cleaning: ----------------------------------
-rm(dataframe,tolerance,varname_1,gadm,tmp,prov,IDs,dictionary,hash)
+rm(dataframe,tolerance,varname_2,province,gadm,tmp,prov,IDs,dictionary,hash)
