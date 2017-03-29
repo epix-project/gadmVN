@@ -79,7 +79,8 @@ prov <- sub("^Can Tho$",   "Hau Giang", prov)
 gadm1_97_03r <- unionSpatialPolygons(gadm1_04_07r, prov)
 IDs <- sapply(gadm1_97_03r@polygons, function(x) x@ID)
 gadm1_97_03r <- SpatialPolygonsDataFrame(gadm1_97_03r,
-                                         data.frame(province = IDs, row.names = IDs))
+                                         data.frame(province = IDs,
+                                                    row.names = IDs))
 
 # From 1997 to 2003:
 prov <- sub("^Thai Nguyen$", "Bac Thai", gadm1_97_03r$province)
@@ -101,7 +102,8 @@ prov <- sub("^Bac Lieu$",    "Minh Hai", prov)
 gadm1_92_96r <- unionSpatialPolygons(gadm1_97_03r, prov)
 IDs <- sapply(gadm1_92_96r@polygons, function(x) x@ID)
 gadm1_92_96r <- SpatialPolygonsDataFrame(gadm1_92_96r,
-                                         data.frame(province = IDs, row.names = IDs))
+                                         data.frame(province = IDs,
+                                                    row.names = IDs))
 
 # From 1992 to 1996:
 prov <- sub("^Ha Giang$",    "Ha Tuyen", gadm1_92_96r$province)
@@ -122,7 +124,8 @@ prov <- sub("^Soc Trang$",   "Hau Giang", prov)
 gadm1_91_91r <- unionSpatialPolygons(gadm1_92_96r, prov)
 IDs <- sapply(gadm1_91_91r@polygons, function(x) x@ID)
 gadm1_91_91r <- SpatialPolygonsDataFrame(gadm1_91_91r,
-                                         data.frame(province = IDs, row.names = IDs))
+                                         data.frame(province = IDs,
+                                                    row.names = IDs))
 
 # For 1991:
 prov <- sub("^Nghe An$", "Nghe Tinh", gadm1_91_91r$province)
@@ -130,7 +133,8 @@ prov <- sub("^Ha Tinh$", "Nghe Tinh", prov)
 gadm1_90_90r <- unionSpatialPolygons(gadm1_91_91r, prov)
 IDs <- sapply(gadm1_90_90r@polygons, function(x) x@ID)
 gadm1_90_90r <- SpatialPolygonsDataFrame(gadm1_90_90r,
-                                         data.frame(province = IDs, row.names = IDs))
+                                         data.frame(province = IDs,
+                                                    row.names = IDs))
 
 # For 1990:
 prov <- sub("^Quang Binh$",       "Binh Tri Thien", gadm1_90_90r$province)
@@ -143,7 +147,14 @@ prov <- sub("^Khanh Hoa$",        "Phu Khanh", prov)
 gadm1_79_89r <- unionSpatialPolygons(gadm1_90_90r, prov)
 IDs <- sapply(gadm1_79_89r@polygons, function(x) x@ID)
 gadm1_79_89r <- SpatialPolygonsDataFrame(gadm1_79_89r,
-                                         data.frame(province = IDs, row.names = IDs))
+                                         data.frame(province = IDs,
+                                                    row.names = IDs))
+
+
+
+# Redefining the data slots for the most 2 recent maps:
+gadm1_08_20r@data <- gadm1_08_20r@data[, "province", drop = FALSE]
+gadm1_04_07r@data <- gadm1_04_07r@data[, "province", drop = FALSE]
 
 
 
