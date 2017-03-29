@@ -7,11 +7,13 @@
 GADM data base from \url{www.gadm.org}.
 }
 \usage{
-gadm(date = "2015-01-01", level = "provinces", resolution = "low")
+gadm(date = "2015-01-01", level = c("provinces", "country"),
+  resolution = c("low", "high"))
 }
 \arguments{
-\item{date}{Text in the "YYYY-MM-DD" format. For example "2015-01-17" for the
-17th of January 2017. By default "2015-01-01".}
+\item{date}{Either text in the "YYYY-MM-DD" format (for example "2015-01-17"
+for the 17th of January 2017), or a numeric format of the year (for example
+2015). By default "2015-01-01".}
 
 \item{level}{Text ("country" or "provinces"). By default "provinces".}
 
@@ -22,10 +24,67 @@ Generates a country or provinces map of Vietnam for a given date and
 resolution.
 }
 \details{
-This function generates a country or provinces map of Vietnam at a given date.
-Indeed the delimitations of Vietnamese provinces have changed through the
+This function generates a country or provinces map of Vietnam at a given
+date, and for a given resolution. Indeed, the delimitations of Vietnamese provinces have changed through the
 history with the number of provinces increasing from 40 in 1979 to 63 in 2008.
-Most of the events are province splits and one merging.
+Most of the events are province splits and one merging. Changes is provinces
+boundaries occured on the 1st of January of 1979, 1990, 1991, 1992, 1997,
+2004 and 2008.
+}
+\note{
+Provinces are plotted in alphabetical order. This is important
+information to know whenever the user wishes to use these maps to plot
+covariables.
+}
+\examples{
+# Plotting the map of Vietnamese provinces as of today:
+pr <- gadm()
+plot(pr)
+
+# The same, with random colors:
+plot(pr, col = 1:4)
+
+# Plotting only the country boundaries:
+vn <- gadm(level = "country")
+plot(vn, col = "grey")
+
+# Visualizing the maps of provinces for all the years where their boundaries
+# changed:
+vn <- lapply(c(1979, 1990:1992, 1997, 2004, 2008), gadm)
+opar <- par(mfrow = c(2, 4))
+for(i in vn) plot(i)
+par(opar)
+
+# ploting the province of Ha Noi before and after 2008, for 2 values of
+# resolution:
+vn1_low <- gadm(2007)
+vn2_low <- gadm(2008)
+vn1_high <- gadm(2007, res = "high")
+vn2_high <- gadm(2008, res = "high")
+opar <- par(mfrow = c(2, 2))
+plot(vn1_low[vn1_low$province \%in\% c("Ha Noi", "Ha Tay"), ])
+title("2007, low resolution")
+plot(vn2_low[vn2_low$province == "Ha Noi", ])
+title("2008, low resolution")
+plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ])
+title("2007, high resolution")
+plot(vn2_high[vn2_high$province == "Ha Noi", ])
+title("2008, high resolution")
+par(opar)
+plot(vn1_low)
+
+# Showing the same thing on the whole map of Vietnam:
+plot(vn1_low)
+plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
+     col = c("red","blue"), add=TRUE)
+plot(vn2_low)
+plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey", add = TRUE)
+
+# Here we can see that the 2008 delimitation of the province of Ha Noi is
+# more than the merging of the provinces of Ha Tay and Ha Noi:
+plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey")
+plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
+     col = c("red", "blue"), add = TRUE)
 }
 \author{
 Marc Choisy
