@@ -15,9 +15,14 @@
 #' @source GADM data base from \url{www.gadm.org}.
 #' @author Marc Choisy
 #' @export
+#' @examples
+#' ## vn <- lapply(as.Date(paste0(c(1979,1990:1992,1997,2004,2008),"-01-01")),gadm)
+#' ## opar <- par(mfrow=c(2,4))
+#' ## for(i in a) plot(i)
+#' ## par(opar)
 gadm <- function(date="2015-01-01",level="provinces",resolution="low") {
   dates <- as.Date(paste0(c(1990,1991,1992,1997,2004,2008),"-01-01"))
-  resolution <- c(low="",high="r")
+  resolution <- c(low="",high="r")[resolution]
   period <- c("08_20","04_07","97_03","92_96","91_91","90_90","79_89")
   if(level=="provinces") middle <- paste0("1_",period[sum(as.Date(date)<dates)+1])
   else middle <- "0"
