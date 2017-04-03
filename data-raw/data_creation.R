@@ -22,7 +22,7 @@ dictionary <- c(              "Bac Kan|Bac Can" = "Bac Kan",
                                      "Dac Nong" = "Dak Nong",
                             "Ha Noi City|Hanoi" = "Ha Noi",
                       "Hai Phong City|Haiphong" = "Hai Phong",
-                 "Ho Chi Minh City|Ho Chi Minh" = "Ho Chi Minh city",
+                 "Ho Chi Minh City|Ho Chi Minh" = "Ho Chi Minh",
                 "Ba Ria - VTau|Ba Ria-Vung Tau" = "Ba Ria - Vung Tau")
 
 
@@ -75,7 +75,7 @@ gadm1_04_07r <- SpatialPolygonsDataFrame(gadm1_04_07r, dataframe, "province")
 prov <- sub("^Dien Bien$", "Lai Chau", gadm1_04_07r$province)
 prov <- sub("^Dak Lak$",   "Dack Lak", prov)
 prov <- sub("^Dak Nong$",  "Dack Lak", prov)
-prov <- sub("^Can Tho$",   "Hau Giang", prov)
+prov <- sub("^Hau Giang$",   "Can Tho", prov)
 gadm1_97_03r <- unionSpatialPolygons(gadm1_04_07r, prov)
 IDs <- sapply(gadm1_97_03r@polygons, function(x) x@ID)
 gadm1_97_03r <- SpatialPolygonsDataFrame(gadm1_97_03r,
@@ -93,8 +93,8 @@ prov <- sub("^Hai Duong$",   "Hai Hung", prov)
 prov <- sub("^Hung Yen$",    "Hai Hung", prov)
 prov <- sub("^Nam Dinh$",    "Nam Ha", prov)
 prov <- sub("^Ha Nam$",      "Nam Ha", prov)
-prov <- sub("^Quang Nam$",   "Q. Nam - Da Nang", prov)
-prov <- sub("^Da Nang$",     "Q. Nam - Da Nang", prov)
+prov <- sub("^Quang Nam$",   "Quang Nam - Da Nang", prov)
+prov <- sub("^Da Nang$",     "Quang Nam - Da Nang", prov)
 prov <- sub("^Binh Duong$",  "Song Be", prov)
 prov <- sub("^Binh Phuoc$",  "Song Be", prov)
 prov <- sub("^Ca Mau$",      "Minh Hai", prov)
@@ -120,6 +120,7 @@ prov <- sub("^Binh Thuan$",  "Thuan Hai", prov)
 prov <- sub("^Ninh Thuan$",  "Thuan Hai", prov)
 prov <- sub("^Tra Vinh$",    "Cuu Long", prov)
 prov <- sub("^Vinh Long$",   "Cuu Long", prov)
+prov <- sub("^Can Tho$",     "Hau Giang", prov)
 prov <- sub("^Soc Trang$",   "Hau Giang", prov)
 gadm1_91_91r <- unionSpatialPolygons(gadm1_92_96r, prov)
 IDs <- sapply(gadm1_91_91r@polygons, function(x) x@ID)
@@ -156,6 +157,23 @@ gadm1_79_89r <- SpatialPolygonsDataFrame(gadm1_79_89r,
 gadm1_08_20r@data <- gadm1_08_20r@data[, "province", drop = FALSE]
 gadm1_04_07r@data <- gadm1_04_07r@data[, "province", drop = FALSE]
 
+# Making province variable in the data frame a character variable:
+gadm1_97_03r@data <- data.frame(province = as.character(gadm1_97_03r@data$province),
+                                row.names = as.character(gadm1_97_03r@data$province),
+                                stringsAsFactors = FALSE)
+gadm1_92_96r@data <- data.frame(province = as.character(gadm1_92_96r@data$province),
+                                row.names = as.character(gadm1_92_96r@data$province),
+                                stringsAsFactors = FALSE)
+gadm1_91_91r@data <- data.frame(province = as.character(gadm1_91_91r@data$province),
+                                row.names = as.character(gadm1_91_91r@data$province),
+                                stringsAsFactors = FALSE)
+gadm1_90_90r@data <- data.frame(province = as.character(gadm1_90_90r@data$province),
+                                row.names = as.character(gadm1_90_90r@data$province),
+                                stringsAsFactors = FALSE)
+gadm1_79_89r@data <- data.frame(province = as.character(gadm1_79_89r@data$province),
+                                row.names = as.character(gadm1_79_89r@data$province),
+                                stringsAsFactors = FALSE)
+
 
 
 # Thinning ---------------------------------------------------------------------
@@ -176,4 +194,18 @@ gadm1_79_89 <- thinnedSpatialPoly(gadm1_79_89r, tolerance)
 eply::evals(paste0("devtools::use_data(",
             paste(grep("gadm\\d", ls(), value = TRUE), collapse = ", "),
             ", internal = TRUE, overwrite = TRUE)"))
+
+################################################################################
+
+regions <- read.table("data-raw/regions.txt", sep = "\t")[, c(1, 7)]
+regions[,1] <- sub(" Province", "", regions[, 1])
+regions[,1] <- sub(" City", "", regions[, 1])
+colors <- list(northwest         = c(243, 225,   0),
+               northeast         = c(255, 175,  26),
+               redriverdelta     = c(255, 103, 103),
+               northcentralcoast = c(  0, 214,   0),
+               southcentralcoast = c(  0, 221, 217),
+               centralhighlands  = c( 36, 135, 255),
+               southeast         = c(195,  36, 255),
+               mekongriverdelta  = c(255,  36, 196))
 
