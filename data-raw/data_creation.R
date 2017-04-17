@@ -1,5 +1,6 @@
-library(maptools)  # for "thinnedSpatialPoly", "unionSpatialPolygons"
-tolerance <- .01   # the tolerance parameter of the thinning function
+library(maptools)   # for "thinnedSpatialPoly", "unionSpatialPolygons"
+library(vietnam63)  # for "provinces" and "provinces_r"                    #####
+tolerance <- .01    # the tolerance parameter of the thinning function
 
 
 
@@ -8,7 +9,10 @@ tolerance <- .01   # the tolerance parameter of the thinning function
 getdata <- function(x)
   raster::getData("GADM", country = "VNM", level = x, path = "data-raw")
 gadm0r <- getdata(0)
-gadm1_08_20r <- getdata(1)
+## gadm1_08_20r <- getdata(1)
+data("provinces_r", "provinces")                                           #####
+gadm1_08_20r <- provinces_r                                                #####
+gadm1_08_20 <- provinces                                                   #####
 load("data-raw/VNM_adm2.RData")  # the 64 provinces from 2004 to 2007
 gadm1_04_07r <- gadm
 
@@ -27,32 +31,50 @@ dictionary <- c(              "Bac Kan|Bac Can" = "Bac Kan",
 
 
 
+# ------------------------------------------------------------------------------
+
+province <- sub("Ba Ria-Vung Tau", "Ba Ria - Vung Tau", gadm1_08_20@data$NAME_ENG)
+province <- sub("Thua Thien Hue", "Thua Thien - Hue", province)            #####
+pr <- as.data.frame(province, stringsAsFactors = FALSE)                    #####
+rownames(pr) <- province                                                   #####
+gadm1_08_20@data <- pr                                                     #####
+gadm1_08_20r@data <- pr                                                    #####
+for (i in seq_along(gadm1_08_20@polygons))                                 #####
+  gadm1_08_20@polygons[[i]]@ID <- province[i]                              #####
+for (i in seq_along(gadm1_08_20r@polygons))                                #####
+  gadm1_08_20r@polygons[[i]]@ID <- province[i]                             #####
+
+
+
+# ------------------------------------------------------------------------------
+
+
 # Fixing gadm1_08_20r ----------------------------------------------------------
 
 # The object gadm1_08_20r cannot be thinned right away because there is an issue
 # in this object: 2 provinces are duplicated. The code below fixes that issue:
-dataframe <- gadm1_08_20r@data   # the data frame of the provinces
-province <- dataframe$VARNAME_1  # the names of the provinces
+## dataframe <- gadm1_08_20r@data   # the data frame of the provinces
+## province <- dataframe$VARNAME_1  # the names of the provinces
 # Merging the polygons by provinces.
 # This has the side effects of
 #   * removing the data frame;
 #   * putting province as IDs of the polygons.
-tmp <- province[!province %in% names(dictionary)]
-hash <- c(dictionary, setNames(tmp, tmp))
-province <- hash[province]
-dataframe$province <- province
-gadm1_08_20r <- unionSpatialPolygons(gadm1_08_20r, province)
+## tmp <- province[!province %in% names(dictionary)]
+## hash <- c(dictionary, setNames(tmp, tmp))
+## province <- hash[province]
+## dataframe$province <- province
+## gadm1_08_20r <- unionSpatialPolygons(gadm1_08_20r, province)
 
 
 
 # thinning gadm1_08_20r:
-dataframe <- subset(dataframe, CCA_1 != "0") # remove the provinces with CCA_1 = 0
+## dataframe <- subset(dataframe, CCA_1 != "0") # remove the provinces with CCA_1 = 0
 # Putting back the fixed data frame (i.e. fixing the first side effect).
 # This in turn has the side effects of
 #   * changing the order of the rows of the data frame so that its variable
 #     "province" is in the same order as the ID of the polygons);
 #   * putting the variable "province" as the rownames of the data frame.
-gadm1_08_20r <- SpatialPolygonsDataFrame(gadm1_08_20r, dataframe, "province")
+## gadm1_08_20r <- SpatialPolygonsDataFrame(gadm1_08_20r, dataframe, "province")
 
 
 
@@ -154,7 +176,7 @@ gadm1_79_89r <- SpatialPolygonsDataFrame(gadm1_79_89r,
 
 
 # Redefining the data slots for the most 2 recent maps:
-gadm1_08_20r@data <- gadm1_08_20r@data[, "province", drop = FALSE]
+## gadm1_08_20r@data <- gadm1_08_20r@data[, "province", drop = FALSE]
 gadm1_04_07r@data <- gadm1_04_07r@data[, "province", drop = FALSE]
 
 # Making province variable in the data frame a character variable:
@@ -179,7 +201,7 @@ gadm1_79_89r@data <- data.frame(province = as.character(gadm1_79_89r@data$provin
 # Thinning ---------------------------------------------------------------------
 
 gadm0 <- thinnedSpatialPoly(gadm0r, tolerance)
-gadm1_08_20 <- thinnedSpatialPoly(gadm1_08_20r, tolerance)
+## gadm1_08_20 <- thinnedSpatialPoly(gadm1_08_20r, tolerance)
 gadm1_04_07 <- thinnedSpatialPoly(gadm1_04_07r, tolerance)
 gadm1_97_03 <- thinnedSpatialPoly(gadm1_97_03r, tolerance)
 gadm1_92_96 <- thinnedSpatialPoly(gadm1_92_96r, tolerance)
@@ -187,6 +209,23 @@ gadm1_91_91 <- thinnedSpatialPoly(gadm1_91_91r, tolerance)
 gadm1_90_90 <- thinnedSpatialPoly(gadm1_90_90r, tolerance)
 gadm1_79_89 <- thinnedSpatialPoly(gadm1_79_89r, tolerance)
 
+# Defining the same boundaries box for all years: ------------------------------
+
+boundbox <- bbox(gadm1_04_07)
+gadm1_08_20r@bbox <- gadm1_97_03r@bbox <- gadm1_92_96r@bbox <- boundbox
+gadm1_91_91r@bbox <- gadm1_90_90r@bbox <- gadm1_79_89r@bbox <- boundbox
+gadm1_04_07r@bbox <- gadm1_08_20@bbox  <- gadm1_97_03@bbox  <- boundbox
+gadm1_92_96@bbox  <- gadm1_91_91@bbox  <- gadm1_90_90@bbox  <- boundbox
+gadm1_79_89@bbox  <- boundbox
+
+# Defining the same projections for all map objects: ---------------------------
+
+pj <- proj4string(gadm1_04_07)
+proj4string(gadm1_79_89)  <- proj4string(gadm1_90_90)  <- proj4string(gadm1_91_91)  <- pj
+proj4string(gadm1_92_96)  <- proj4string(gadm1_97_03)  <- proj4string(gadm1_08_20)  <- pj
+proj4string(gadm1_04_07r) <- proj4string(gadm1_79_89r) <- proj4string(gadm1_90_90r) <- pj
+proj4string(gadm1_91_91r) <- proj4string(gadm1_92_96r) <- proj4string(gadm1_97_03r) <- pj
+proj4string(gadm1_08_20r) <- pj
 
 
 # Saving -----------------------------------------------------------------------
