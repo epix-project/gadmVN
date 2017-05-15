@@ -1,6 +1,7 @@
-#' gadmVN: A database gathering vector and raster maps of Vietnam.
+#' gadmVN: Country and provinces maps of Vietnam
 #'
-#' The mapsVN package provides two maps of Vietnam: gadm0 and gadm1.
+#' The mapsVN package provides country and provinces maps of Vietnam at
+#' different points in time.
 #'
 #' @docType package
 #' @name gadmVN

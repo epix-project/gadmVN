@@ -4,8 +4,9 @@
 \name{gadmVN}
 \alias{gadmVN}
 \alias{gadmVN-package}
-\title{gadmVN: A database gathering vector and raster maps of Vietnam.}
+\title{gadmVN: Country and provinces maps of Vietnam}
 \description{
-The mapsVN package provides two maps of Vietnam: gadm0 and gadm1.
+The mapsVN package provides country and provinces maps of Vietnam at
+different points in time.
 }
 
