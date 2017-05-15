@@ -39,7 +39,7 @@ January of 1979, 1990, 1991, 1992, 1997, 2004 and 2008.
 }
 \note{
 argument \code{merge_hanoi} makes a difference only for \code{date}
-before 1992-01-01.
+before 2008-01-01.
 
 Provinces are plotted in alphabetical order. This is important
 information to know whenever the user wishes to use these maps to plot

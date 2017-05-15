@@ -11,7 +11,7 @@
 #' January of 1979, 1990, 1991, 1992, 1997, 2004 and 2008.
 #'
 #' @note argument \code{merge_hanoi} makes a difference only for \code{date}
-#' before 1992-01-01.
+#' before 2008-01-01.
 #'
 #' @param date either text in the "YYYY-MM-DD" format (for example "2015-01-17"
 #' for the 17th of January 2017), or a numeric format of the year (for example
@@ -86,6 +86,6 @@ gadm <- function(date = "2015-01-01", level = c("provinces", "country"), resolut
   if (level == "provinces")
     middle <- paste0("1_", period[sum(as.Date(date) < dates) + 1])
   else middle <- "0"
-  hanoi <- ifelse(merge_hanoi & date < as.Date("1992-01-01"), "_hn", "")
+  hanoi <- ifelse(merge_hanoi & date < as.Date("2008-01-01"), "_hn", "")
   get(paste0("gadm", middle, resolution, hanoi))
 }
