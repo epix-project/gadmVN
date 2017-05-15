@@ -68,3 +68,12 @@ colors <- palette[as.numeric(cut(latitudes, breaks, include = TRUE))]
 plot(pr, col = colors)
 ```
 
+Plotting the 8 regions of Vietnam:
+
+```{r}
+provinces <- gadm()
+plot(provinces, col = provinces$color)
+leg <- unique(provinces@data[, c("region", "color")])
+legend("topright", legend = leg$region, fill = leg$color, bty = "n")
+```
+
