@@ -263,18 +263,90 @@ IDs <- sapply(gadm1_90_90r_hn@polygons, function(x) x@ID)
 gadm1_90_90r_hn <- SpatialPolygonsDataFrame(gadm1_90_90r_hn,
                                             data.frame(province = IDs,
                                                        row.names = IDs))
+prov <- sub("^Ha Tay$", "Ha Noi", gadm1_91_91$province)
+gadm1_91_91_hn <- unionSpatialPolygons(gadm1_91_91, prov)
+IDs <- sapply(gadm1_91_91_hn@polygons, function(x) x@ID)
+gadm1_91_91_hn <- SpatialPolygonsDataFrame(gadm1_91_91_hn,
+                                           data.frame(province = IDs,
+                                                      row.names = IDs))
+prov <- sub("^Ha Tay$", "Ha Noi", gadm1_92_96$province)
+gadm1_92_96_hn <- unionSpatialPolygons(gadm1_92_96, prov)
+IDs <- sapply(gadm1_92_96_hn@polygons, function(x) x@ID)
+gadm1_92_96_hn <- SpatialPolygonsDataFrame(gadm1_92_96_hn,
+                                           data.frame(province = IDs,
+                                                      row.names = IDs))
+prov <- sub("^Ha Tay$", "Ha Noi", gadm1_97_03$province)
+gadm1_97_03_hn <- unionSpatialPolygons(gadm1_97_03, prov)
+IDs <- sapply(gadm1_97_03_hn@polygons, function(x) x@ID)
+gadm1_97_03_hn <- SpatialPolygonsDataFrame(gadm1_97_03_hn,
+                                           data.frame(province = IDs,
+                                                      row.names = IDs))
+prov <- sub("^Ha Tay$", "Ha Noi", gadm1_04_07$province)
+gadm1_04_07_hn <- unionSpatialPolygons(gadm1_04_07, prov)
+IDs <- sapply(gadm1_04_07_hn@polygons, function(x) x@ID)
+gadm1_04_07_hn <- SpatialPolygonsDataFrame(gadm1_04_07_hn,
+                                           data.frame(province = IDs,
+                                                      row.names = IDs))
+prov <- sub("^Ha Tay$", "Ha Noi", gadm1_91_91r$province)
+gadm1_91_91r_hn <- unionSpatialPolygons(gadm1_91_91r, prov)
+IDs <- sapply(gadm1_91_91r_hn@polygons, function(x) x@ID)
+gadm1_91_91r_hn <- SpatialPolygonsDataFrame(gadm1_91_91r_hn,
+                                            data.frame(province = IDs,
+                                                       row.names = IDs))
+prov <- sub("^Ha Tay$", "Ha Noi", gadm1_92_96r$province)
+gadm1_92_96r_hn <- unionSpatialPolygons(gadm1_92_96r, prov)
+IDs <- sapply(gadm1_92_96r_hn@polygons, function(x) x@ID)
+gadm1_92_96r_hn <- SpatialPolygonsDataFrame(gadm1_92_96r_hn,
+                                            data.frame(province = IDs,
+                                                       row.names = IDs))
+prov <- sub("^Ha Tay$", "Ha Noi", gadm1_97_03r$province)
+gadm1_97_03r_hn <- unionSpatialPolygons(gadm1_97_03r, prov)
+IDs <- sapply(gadm1_97_03r_hn@polygons, function(x) x@ID)
+gadm1_97_03r_hn <- SpatialPolygonsDataFrame(gadm1_97_03r_hn,
+                                            data.frame(province = IDs,
+                                                       row.names = IDs))
+prov <- sub("^Ha Tay$", "Ha Noi", gadm1_04_07r$province)
+gadm1_04_07r_hn <- unionSpatialPolygons(gadm1_04_07r, prov)
+IDs <- sapply(gadm1_04_07r_hn@polygons, function(x) x@ID)
+gadm1_04_07r_hn <- SpatialPolygonsDataFrame(gadm1_04_07r_hn,
+                                            data.frame(province = IDs,
+                                                       row.names = IDs))
 gadm1_79_89_hn <- spChFIDs(gadm1_79_89_hn, as.character(seq_len(length(gadm1_79_89_hn))))
 gadm1_90_90_hn <- spChFIDs(gadm1_90_90_hn, as.character(seq_len(length(gadm1_90_90_hn))))
+gadm1_91_91_hn <- spChFIDs(gadm1_91_91_hn, as.character(seq_len(length(gadm1_91_91_hn))))
+gadm1_92_96_hn <- spChFIDs(gadm1_92_96_hn, as.character(seq_len(length(gadm1_92_96_hn))))
+gadm1_97_03_hn <- spChFIDs(gadm1_97_03_hn, as.character(seq_len(length(gadm1_97_03_hn))))
+gadm1_04_07_hn <- spChFIDs(gadm1_04_07_hn, as.character(seq_len(length(gadm1_04_07_hn))))
 gadm1_79_89r_hn <- spChFIDs(gadm1_79_89r_hn, as.character(seq_len(length(gadm1_79_89r_hn))))
 gadm1_90_90r_hn <- spChFIDs(gadm1_90_90r_hn, as.character(seq_len(length(gadm1_90_90r_hn))))
+gadm1_91_91r_hn <- spChFIDs(gadm1_91_91r_hn, as.character(seq_len(length(gadm1_91_91r_hn))))
+gadm1_92_96r_hn <- spChFIDs(gadm1_92_96r_hn, as.character(seq_len(length(gadm1_92_96r_hn))))
+gadm1_97_03r_hn <- spChFIDs(gadm1_97_03r_hn, as.character(seq_len(length(gadm1_97_03r_hn))))
+gadm1_04_07r_hn <- spChFIDs(gadm1_04_07r_hn, as.character(seq_len(length(gadm1_04_07r_hn))))
 gadm1_79_89_hn@bbox  <- boundbox
 gadm1_90_90_hn@bbox  <- boundbox
+gadm1_91_91_hn@bbox  <- boundbox
+gadm1_92_96_hn@bbox  <- boundbox
+gadm1_97_03_hn@bbox  <- boundbox
+gadm1_04_07_hn@bbox  <- boundbox
 gadm1_79_89r_hn@bbox  <- boundbox
 gadm1_90_90r_hn@bbox  <- boundbox
+gadm1_91_91r_hn@bbox  <- boundbox
+gadm1_92_96r_hn@bbox  <- boundbox
+gadm1_97_03r_hn@bbox  <- boundbox
+gadm1_04_07r_hn@bbox  <- boundbox
 proj4string(gadm1_79_89_hn) <- pj
 proj4string(gadm1_90_90_hn) <- pj
+proj4string(gadm1_91_91_hn) <- pj
+proj4string(gadm1_92_96_hn) <- pj
+proj4string(gadm1_97_03_hn) <- pj
+proj4string(gadm1_04_07_hn) <- pj
 proj4string(gadm1_79_89r_hn) <- pj
 proj4string(gadm1_90_90r_hn) <- pj
+proj4string(gadm1_91_91r_hn) <- pj
+proj4string(gadm1_92_96r_hn) <- pj
+proj4string(gadm1_97_03r_hn) <- pj
+proj4string(gadm1_04_07r_hn) <- pj
 
 # Defining the regions: --------------------------------------------------------
 
