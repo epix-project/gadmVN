@@ -8,16 +8,22 @@ GADM data base from \url{www.gadm.org}.
 }
 \usage{
 gadm(date = "2015-01-01", level = c("provinces", "country"),
-  resolution = c("low", "high"))
+  resolution = c("low", "high"), merge_hanoi = FALSE)
 }
 \arguments{
-\item{date}{Either text in the "YYYY-MM-DD" format (for example "2015-01-17"
+\item{date}{either text in the "YYYY-MM-DD" format (for example "2015-01-17"
 for the 17th of January 2017), or a numeric format of the year (for example
 2015). By default "2015-01-01".}
 
-\item{level}{Text ("country" or "provinces"). By default "provinces".}
+\item{level}{text ("country" or "provinces"). By default "provinces".}
 
-\item{resolution}{Text ("low" or "high"). By default "low".}
+\item{resolution}{text ("low" or "high"). By default "low".}
+
+\item{merge_hanoi}{boolean indicating whether the provinces of Ha Noi and
+Ha Son Binh should be merged.}
+}
+\value{
+An object of class "SpatialPolygonsDataFrame".
 }
 \description{
 Generates a country or provinces map of Vietnam for a given date and
@@ -25,13 +31,16 @@ resolution.
 }
 \details{
 This function generates a country or provinces map of Vietnam at a given
-date, and for a given resolution. Indeed, the delimitations of Vietnamese provinces have changed through the
-history with the number of provinces increasing from 40 in 1979 to 63 in 2008.
-Most of the events are province splits and one merging. Changes is provinces
-boundaries occured on the 1st of January of 1979, 1990, 1991, 1992, 1997,
-2004 and 2008.
+date, and for a given resolution. Indeed, the delimitations of Vietnamese
+provinces have changed through the history with the number of provinces
+increasing from 40 in 1979 to 63 in 2008. Most of the events are province
+splits and one merging. Changes is provinces boundaries occured on the 1st of
+January of 1979, 1990, 1991, 1992, 1997, 2004 and 2008.
 }
 \note{
+argument \code{merge_hanoi} makes a difference only for \code{date}
+before 1992-01-01.
+
 Provinces are plotted in alphabetical order. This is important
 information to know whenever the user wishes to use these maps to plot
 covariables.

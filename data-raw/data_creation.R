@@ -3,7 +3,6 @@ library(vietnam63)  # for "provinces" and "provinces_r"                    #####
 tolerance <- .01    # the tolerance parameter of the thinning function
 
 
-
 # Downloading the country and provinces maps from GADM (www.gadm.org) ----------
 
 getdata <- function(x)
@@ -196,7 +195,14 @@ gadm1_79_89r@data <- data.frame(province = as.character(gadm1_79_89r@data$provin
                                 row.names = as.character(gadm1_79_89r@data$province),
                                 stringsAsFactors = FALSE)
 
+# Features IDs -----------------------------------------------------------------
 
+gadm1_04_07r <- spChFIDs(gadm1_04_07r, as.character(seq_len(length(gadm1_04_07r))))
+gadm1_97_03r <- spChFIDs(gadm1_97_03r, as.character(seq_len(length(gadm1_97_03r))))
+gadm1_92_96r <- spChFIDs(gadm1_92_96r, as.character(seq_len(length(gadm1_92_96r))))
+gadm1_91_91r <- spChFIDs(gadm1_91_91r, as.character(seq_len(length(gadm1_91_91r))))
+gadm1_90_90r <- spChFIDs(gadm1_90_90r, as.character(seq_len(length(gadm1_90_90r))))
+gadm1_79_89r <- spChFIDs(gadm1_79_89r, as.character(seq_len(length(gadm1_79_89r))))
 
 # Thinning ---------------------------------------------------------------------
 
@@ -227,6 +233,46 @@ proj4string(gadm1_04_07r) <- proj4string(gadm1_79_89r) <- proj4string(gadm1_90_9
 proj4string(gadm1_91_91r) <- proj4string(gadm1_92_96r) <- proj4string(gadm1_97_03r) <- pj
 proj4string(gadm1_08_20r) <- pj
 
+# defining the maps with the Hanoi, Ha Tay, Hoa Binh, Hoa Son Binh merged: -----
+# these maps are useful in case of time series that start before 1992-01-01 and
+# end after 2007-12-31.
+
+prov <- sub("^Hoa Son Binh$", "Ha Noi", gadm1_79_89$province)
+gadm1_79_89_hn <- unionSpatialPolygons(gadm1_79_89, prov)
+IDs <- sapply(gadm1_79_89_hn@polygons, function(x) x@ID)
+gadm1_79_89_hn <- SpatialPolygonsDataFrame(gadm1_79_89_hn,
+                                           data.frame(province = IDs,
+                                                      row.names = IDs))
+prov <- sub("^Hoa Son Binh$", "Ha Noi", gadm1_90_90$province)
+gadm1_90_90_hn <- unionSpatialPolygons(gadm1_90_90, prov)
+IDs <- sapply(gadm1_90_90_hn@polygons, function(x) x@ID)
+gadm1_90_90_hn <- SpatialPolygonsDataFrame(gadm1_90_90_hn,
+                                           data.frame(province = IDs,
+                                                      row.names = IDs))
+prov <- sub("^Hoa Son Binh$", "Ha Noi", gadm1_79_89r$province)
+gadm1_79_89r_hn <- unionSpatialPolygons(gadm1_79_89r, prov)
+IDs <- sapply(gadm1_79_89r_hn@polygons, function(x) x@ID)
+gadm1_79_89r_hn <- SpatialPolygonsDataFrame(gadm1_79_89r_hn,
+                                            data.frame(province = IDs,
+                                                       row.names = IDs))
+prov <- sub("^Hoa Son Binh$", "Ha Noi", gadm1_90_90r$province)
+gadm1_90_90r_hn <- unionSpatialPolygons(gadm1_90_90r, prov)
+IDs <- sapply(gadm1_90_90r_hn@polygons, function(x) x@ID)
+gadm1_90_90r_hn <- SpatialPolygonsDataFrame(gadm1_90_90r_hn,
+                                            data.frame(province = IDs,
+                                                       row.names = IDs))
+gadm1_79_89_hn <- spChFIDs(gadm1_79_89_hn, as.character(seq_len(length(gadm1_79_89_hn))))
+gadm1_90_90_hn <- spChFIDs(gadm1_90_90_hn, as.character(seq_len(length(gadm1_90_90_hn))))
+gadm1_79_89r_hn <- spChFIDs(gadm1_79_89r_hn, as.character(seq_len(length(gadm1_79_89r_hn))))
+gadm1_90_90r_hn <- spChFIDs(gadm1_90_90r_hn, as.character(seq_len(length(gadm1_90_90r_hn))))
+gadm1_79_89_hn@bbox  <- boundbox
+gadm1_90_90_hn@bbox  <- boundbox
+gadm1_79_89r_hn@bbox  <- boundbox
+gadm1_90_90r_hn@bbox  <- boundbox
+proj4string(gadm1_79_89_hn) <- pj
+proj4string(gadm1_90_90_hn) <- pj
+proj4string(gadm1_79_89r_hn) <- pj
+proj4string(gadm1_90_90r_hn) <- pj
 
 # Saving -----------------------------------------------------------------------
 

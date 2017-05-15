@@ -4,24 +4,29 @@
 #' resolution.
 #'
 #' This function generates a country or provinces map of Vietnam at a given
-#' date, and for a given resolution. Indeed, the delimitations of Vietnamese provinces have changed through the
-#' history with the number of provinces increasing from 40 in 1979 to 63 in 2008.
-#' Most of the events are province splits and one merging. Changes is provinces
-#' boundaries occured on the 1st of January of 1979, 1990, 1991, 1992, 1997,
-#' 2004 and 2008.
+#' date, and for a given resolution. Indeed, the delimitations of Vietnamese
+#' provinces have changed through the history with the number of provinces
+#' increasing from 40 in 1979 to 63 in 2008. Most of the events are province
+#' splits and one merging. Changes is provinces boundaries occured on the 1st of
+#' January of 1979, 1990, 1991, 1992, 1997, 2004 and 2008.
 #'
-#' @param date Either text in the "YYYY-MM-DD" format (for example "2015-01-17"
+#' @note argument \code{merge_hanoi} makes a difference only for \code{date}
+#' before 1992-01-01.
+#'
+#' @param date either text in the "YYYY-MM-DD" format (for example "2015-01-17"
 #' for the 17th of January 2017), or a numeric format of the year (for example
 #' 2015). By default "2015-01-01".
-#' @param level Text ("country" or "provinces"). By default "provinces".
-#' @param resolution Text ("low" or "high"). By default "low".
+#' @param level text ("country" or "provinces"). By default "provinces".
+#' @param resolution text ("low" or "high"). By default "low".
+#' @param merge_hanoi boolean indicating whether the provinces of Ha Noi and
+#' Ha Son Binh should be merged.
 #' @source GADM data base from \url{www.gadm.org}.
 #' @author Marc Choisy
 #' @note Provinces are plotted in alphabetical order. This is important
 #' information to know whenever the user wishes to use these maps to plot
 #' covariables.
 #' @export
-#' @return
+#' @return An object of class "SpatialPolygonsDataFrame".
 #' @examples
 #' # Plotting the map of Vietnamese provinces as of today:
 #' pr <- gadm()
@@ -71,15 +76,16 @@
 #' plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey")
 #' plot(vn1_high[vn1_high$province %in% c("Ha Noi", "Ha Tay"), ],
 #'      col = c("red", "blue"), add = TRUE)
-gadm <- function(date = "2015-01-01", level = c("provinces", "country"), resolution = c("low", "high")) {
+gadm <- function(date = "2015-01-01", level = c("provinces", "country"), resolution = c("low", "high"), merge_hanoi = FALSE) {
   dates <- as.Date(paste0(c(1990:1992, 1997, 2004, 2008), "-01-01"))
   if(is.numeric(date)) date <- paste0(date, "-01-01")
   level <- match.arg(level)
   resolution <- match.arg(resolution)
   resolution <- c(low = "", high = "r")[resolution]
   period <- c("08_20", "04_07", "97_03", "92_96", "91_91", "90_90", "79_89")
-  if(level == "provinces")
+  if (level == "provinces")
     middle <- paste0("1_", period[sum(as.Date(date) < dates) + 1])
   else middle <- "0"
-  get(paste0("gadm", middle, resolution))
+  hanoi <- ifelse(merge_hanoi & date < as.Date("1992-01-01"), "_hn", "")
+  get(paste0("gadm", middle, resolution, hanoi))
 }
