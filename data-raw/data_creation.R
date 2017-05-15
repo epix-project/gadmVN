@@ -1,13 +1,15 @@
 library(maptools)   # for "thinnedSpatialPoly", "unionSpatialPolygons"
-library(vietnam63)  # for "provinces" and "provinces_r"                    #####
+#library(vietnam63)  # for "provinces" and "provinces_r"                    #####
+library(censusVN2009)  # for "provinces" and "provinces_r"                 #####
 tolerance <- .01    # the tolerance parameter of the thinning function
 
 
 # Downloading the country and provinces maps from GADM (www.gadm.org) ----------
 
-getdata <- function(x)
-  raster::getData("GADM", country = "VNM", level = x, path = "data-raw")
-gadm0r <- getdata(0)
+#getdata <- function(x)
+#  raster::getData("GADM", country = "VNM", level = x, path = "data-raw")
+#gadm0r <- getdata(0)
+gadm0r <- raster::getData("GADM", country = "VNM", level = 0, path = "data-raw")
 ## gadm1_08_20r <- getdata(1)
 data("provinces_r", "provinces")                                           #####
 gadm1_08_20r <- provinces_r                                                #####
@@ -32,16 +34,16 @@ dictionary <- c(              "Bac Kan|Bac Can" = "Bac Kan",
 
 # ------------------------------------------------------------------------------
 
-province <- sub("Ba Ria-Vung Tau", "Ba Ria - Vung Tau", gadm1_08_20@data$NAME_ENG)
-province <- sub("Thua Thien Hue", "Thua Thien - Hue", province)            #####
-pr <- as.data.frame(province, stringsAsFactors = FALSE)                    #####
-rownames(pr) <- province                                                   #####
-gadm1_08_20@data <- pr                                                     #####
-gadm1_08_20r@data <- pr                                                    #####
-for (i in seq_along(gadm1_08_20@polygons))                                 #####
-  gadm1_08_20@polygons[[i]]@ID <- province[i]                              #####
-for (i in seq_along(gadm1_08_20r@polygons))                                #####
-  gadm1_08_20r@polygons[[i]]@ID <- province[i]                             #####
+#province <- sub("Ba Ria-Vung Tau", "Ba Ria - Vung Tau", gadm1_08_20r@data$NAME_ENG)
+#province <- sub("Thua Thien Hue", "Thua Thien - Hue", province)            #####
+#pr <- as.data.frame(province, stringsAsFactors = FALSE)                    #####
+#rownames(pr) <- province                                                   #####
+#gadm1_08_20@data <- pr                                                     #####
+#gadm1_08_20r@data <- pr                                                    #####
+#for (i in seq_along(gadm1_08_20@polygons))                                 #####
+#  gadm1_08_20@polygons[[i]]@ID <- province[i]                              #####
+#for (i in seq_along(gadm1_08_20r@polygons))                                #####
+#  gadm1_08_20r@polygons[[i]]@ID <- province[i]                             #####
 
 
 
@@ -274,23 +276,32 @@ proj4string(gadm1_90_90_hn) <- pj
 proj4string(gadm1_79_89r_hn) <- pj
 proj4string(gadm1_90_90r_hn) <- pj
 
+# Defining the regions: --------------------------------------------------------
+
+regions <- read.table("data-raw/regions.txt", sep = "\t", stringsAsFactors = FALSE)[, c(1, 7)]
+names(regions) <- c("province", "region")
+regions[, 1] <- sub(" Province", "", regions[, 1])
+regions[, 1] <- sub(" City", "", regions[, 1])
+colors <- list(Northwest             = c(243, 225,   0),
+               Northeast             = c(255, 175,  26),
+               "Red River Delta"     = c(255, 103, 103),
+               "North Central Coast" = c(  0, 214,   0),
+               "South Central Coast" = c(  0, 221, 217),
+               "Central Highlands"   = c( 36, 135, 255),
+               Southeast             = c(195,  36, 255),
+               "Mekong Delta"        = c(255,  36, 196))
+colors <- sapply(colors, function(x) rgb(x[1], x[2], x[3], max = 255))
+regions$color <- colors[regions$region]
+gadm1_08_20 <- merge(gadm1_08_20, regions)
+gadm1_08_20r <- merge(gadm1_08_20r, regions)
+
 # Saving -----------------------------------------------------------------------
 
 eply::evals(paste0("devtools::use_data(",
             paste(grep("gadm\\d", ls(), value = TRUE), collapse = ", "),
             ", internal = TRUE, overwrite = TRUE)"))
 
-################################################################################
 
-regions <- read.table("data-raw/regions.txt", sep = "\t")[, c(1, 7)]
-regions[,1] <- sub(" Province", "", regions[, 1])
-regions[,1] <- sub(" City", "", regions[, 1])
-colors <- list(northwest         = c(243, 225,   0),
-               northeast         = c(255, 175,  26),
-               redriverdelta     = c(255, 103, 103),
-               northcentralcoast = c(  0, 214,   0),
-               southcentralcoast = c(  0, 221, 217),
-               centralhighlands  = c( 36, 135, 255),
-               southeast         = c(195,  36, 255),
-               mekongriverdelta  = c(255,  36, 196))
+
+
 
