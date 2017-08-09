@@ -9,10 +9,9 @@ License: MIT
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Imports:
-    sp,
+    sp
 Depends:
-  R (>= 2.10),
-  sp,
+  R (>= 2.10)
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

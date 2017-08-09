@@ -26,6 +26,7 @@
 #' information to know whenever the user wishes to use these maps to plot
 #' covariables.
 #' @export
+#' @importClassesFrom sp SpatialPolygonsDataFrame
 #' @return An object of class "SpatialPolygonsDataFrame".
 #' @examples
 #' # Plotting the map of Vietnamese provinces as of today:
