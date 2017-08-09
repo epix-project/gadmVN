@@ -9,4 +9,3 @@
 The mapsVN package provides country and provinces maps of Vietnam at
 different points in time.
 }
-

@@ -98,4 +98,3 @@ plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
 \author{
 Marc Choisy
 }
-
