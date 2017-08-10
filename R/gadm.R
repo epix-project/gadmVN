@@ -18,8 +18,9 @@
 #' 2015). By default "2015-01-01".
 #' @param level text ("country" or "provinces"). By default "provinces".
 #' @param resolution text ("low" or "high"). By default "low".
-#' @param merge_hanoi boolean indicating whether the provinces of Ha Noi and
-#' Ha Son Binh should be merged.
+#' @param merge_hanoi boolean indicating whether the province of Ha Noi should
+#' be merged with the province of Ha Son Binh (before 1992) or the province of
+#' Ha Tay (after 1991).
 #' @source GADM data base from \url{www.gadm.org}.
 #' @author Marc Choisy
 #' @note Provinces are plotted in alphabetical order. This is important
