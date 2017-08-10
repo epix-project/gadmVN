@@ -1,5 +1,5 @@
 library(maptools)   # for "thinnedSpatialPoly", "unionSpatialPolygons"
-#library(vietnam63)  # for "provinces" and "provinces_r"                    #####
+#library(vietnam63)  # for "provinces" and "provinces_r"                   #####
 library(censusVN2009)  # for "provinces" and "provinces_r"                 #####
 tolerance <- .01    # the tolerance parameter of the thinning function
 
@@ -239,31 +239,31 @@ proj4string(gadm1_08_20r) <- pj
 # these maps are useful in case of time series that start before 1992-01-01 and
 # end after 2007-12-31.
 
-prov <- sub("^Hoa Son Binh$", "Ha Noi", gadm1_79_89$province)
+prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_79_89$province)
 gadm1_79_89_hn <- unionSpatialPolygons(gadm1_79_89, prov)
 IDs <- sapply(gadm1_79_89_hn@polygons, function(x) x@ID)
 gadm1_79_89_hn <- SpatialPolygonsDataFrame(gadm1_79_89_hn,
                                            data.frame(province = IDs,
                                                       row.names = IDs))
-prov <- sub("^Hoa Son Binh$", "Ha Noi", gadm1_90_90$province)
+prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_90_90$province)
 gadm1_90_90_hn <- unionSpatialPolygons(gadm1_90_90, prov)
 IDs <- sapply(gadm1_90_90_hn@polygons, function(x) x@ID)
 gadm1_90_90_hn <- SpatialPolygonsDataFrame(gadm1_90_90_hn,
                                            data.frame(province = IDs,
                                                       row.names = IDs))
-prov <- sub("^Hoa Son Binh$", "Ha Noi", gadm1_79_89r$province)
+prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_79_89r$province)
 gadm1_79_89r_hn <- unionSpatialPolygons(gadm1_79_89r, prov)
 IDs <- sapply(gadm1_79_89r_hn@polygons, function(x) x@ID)
 gadm1_79_89r_hn <- SpatialPolygonsDataFrame(gadm1_79_89r_hn,
                                             data.frame(province = IDs,
                                                        row.names = IDs))
-prov <- sub("^Hoa Son Binh$", "Ha Noi", gadm1_90_90r$province)
+prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_90_90r$province)
 gadm1_90_90r_hn <- unionSpatialPolygons(gadm1_90_90r, prov)
 IDs <- sapply(gadm1_90_90r_hn@polygons, function(x) x@ID)
 gadm1_90_90r_hn <- SpatialPolygonsDataFrame(gadm1_90_90r_hn,
                                             data.frame(province = IDs,
                                                        row.names = IDs))
-prov <- sub("^Ha Tay$", "Ha Noi", gadm1_91_91$province)
+prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_91_91$province)
 gadm1_91_91_hn <- unionSpatialPolygons(gadm1_91_91, prov)
 IDs <- sapply(gadm1_91_91_hn@polygons, function(x) x@ID)
 gadm1_91_91_hn <- SpatialPolygonsDataFrame(gadm1_91_91_hn,
@@ -287,7 +287,7 @@ IDs <- sapply(gadm1_04_07_hn@polygons, function(x) x@ID)
 gadm1_04_07_hn <- SpatialPolygonsDataFrame(gadm1_04_07_hn,
                                            data.frame(province = IDs,
                                                       row.names = IDs))
-prov <- sub("^Ha Tay$", "Ha Noi", gadm1_91_91r$province)
+prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_91_91r$province)                ###
 gadm1_91_91r_hn <- unionSpatialPolygons(gadm1_91_91r, prov)
 IDs <- sapply(gadm1_91_91r_hn@polygons, function(x) x@ID)
 gadm1_91_91r_hn <- SpatialPolygonsDataFrame(gadm1_91_91r_hn,
