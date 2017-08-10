@@ -77,3 +77,43 @@ leg <- unique(provinces@data[, c("region", "color")])
 legend("topright", legend = leg$region, fill = leg$color, bty = "n")
 ```
 
+## Additional check-up
+
+Here is the code only, the text needs to be written.
+
+```{r}
+m2015 <- gadm()
+plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+box(bty = "o")
+plot(m2015, add = TRUE)
+plot(subset(m2015, province == "Ha Noi"), add = TRUE, col = "blue")
+plot(subset(m2015, province == "Hoa Binh"), add = TRUE, col = "green")
+```
+
+```{r}
+m2007 <- gadm(2007)
+plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+box(bty = "o")
+plot(m2007, add = TRUE)
+plot(subset(m2007, province == "Ha Noi"), add = TRUE, col = "blue")
+plot(subset(m2007, province == "Ha Tay"), add = TRUE, col = "yellow")
+plot(subset(m2007, province == "Hoa Binh"), add = TRUE, col = "green")
+```
+
+```{r}
+m1991 <- gadm(1991, merge_hanoi = T)
+plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+box(bty = "o")
+plot(m1991, add = TRUE)
+plot(subset(m1991, province == "Ha Noi"), add = TRUE, col = "blue")
+```
+
+```{r}
+m2003 <- gadm(2003, merge_hanoi = T)
+plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+box(bty = "o")
+plot(m2003, add = TRUE)
+plot(subset(m2003, province == "Ha Noi"), add = TRUE, col = "blue")
+```
+
+
