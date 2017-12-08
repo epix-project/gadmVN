@@ -348,7 +348,7 @@ proj4string(gadm1_92_96r_hn) <- pj
 proj4string(gadm1_97_03r_hn) <- pj
 proj4string(gadm1_04_07r_hn) <- pj
 
-# Defining the regions: --------------------------------------------------------
+# Defining the ecologic regions: -----------------------------------------------
 
 regions <- read.table("data-raw/regions.txt", sep = "\t", stringsAsFactors = FALSE)[, c(1, 7)]
 names(regions) <- c("province", "region")
@@ -363,9 +363,26 @@ colors <- list(Northwest             = c(243, 225,   0),
                Southeast             = c(195,  36, 255),
                "Mekong Delta"        = c(255,  36, 196))
 colors <- sapply(colors, function(x) rgb(x[1], x[2], x[3], max = 255))
-regions$color <- colors[regions$region]
+regions$color_ecologic <- colors[regions$region]
+# adding the economic regions:
+economic <- gsub("North Central Coast", "Central Coast", regions$region)
+economic <- gsub("South Central Coast", "Central Coast", economic)
+economic <- gsub("Northeast", "Northern Midlands & Mountains", economic)
+economic <- gsub("Northwest", "Northern Midlands & Mountains", economic)
+economic[regions$province == "Quang Ninh"] <- "Red River Delta"
+regions$region_economic <- economic
+colors <- list("Northern Midlands & Mountains" = c(243, 225,   0),
+               "Red River Delta"               = c(255, 103, 103),
+               "Central Coast"                 = c(  0, 214,   0),
+               "Central Highlands"             = c( 36, 135, 255),
+               Southeast                       = c(195,  36, 255),
+               "Mekong Delta"                  = c(255,  36, 196))
+colors <- sapply(colors, function(x) rgb(x[1], x[2], x[3], max = 255))
+regions$color_economic <- colors[regions$region_economic]
+names(regions) <- gsub("^region$", "region_ecologic", names(regions))
 gadm1_08_20 <- merge(gadm1_08_20, regions)
 gadm1_08_20r <- merge(gadm1_08_20r, regions)
+
 
 # Saving -----------------------------------------------------------------------
 
