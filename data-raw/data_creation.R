@@ -1,5 +1,4 @@
-library(maptools)   # for "thinnedSpatialPoly", "unionSpatialPolygons"
-#library(vietnam63)  # for "provinces" and "provinces_r"                   #####
+library(maptools)      # for "thinnedSpatialPoly", "unionSpatialPolygons"
 library(censusVN2009)  # for "provinces" and "provinces_r"                 #####
 tolerance <- .01    # the tolerance parameter of the thinning function
 
@@ -350,7 +349,8 @@ proj4string(gadm1_04_07r_hn) <- pj
 
 # Defining the ecologic regions: -----------------------------------------------
 
-regions <- read.table("data-raw/regions.txt", sep = "\t", stringsAsFactors = FALSE)[, c(1, 7)]
+regions <- read.table("data-raw/provinces_wikipedia.txt", sep = "\t",
+                      stringsAsFactors = FALSE)[, c(1, 7)]
 names(regions) <- c("province", "region")
 regions[, 1] <- sub(" Province", "", regions[, 1])
 regions[, 1] <- sub(" City", "", regions[, 1])

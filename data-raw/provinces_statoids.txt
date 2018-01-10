@@ -1,0 +1,65 @@
+# source: http://www.statoids.com/uvn.html
+Province	HASC	ISO	FIPS	Post	Pop-2009	Pop-1999	Area(km.²)	Area(mi.²)	Capital	Part	1965 Prov.
+An Giang	VN.AG	44	VM01	94	2,144,772	2,049,039	3,537	1,366	Long Xuyen	S-C	An Giang
+Bac Can	VN.BK	53	VM72	17	294,660	275,250	4,859	1,876	Bac Can	N-T	Bac Can
+Bac Giang	VN.BG	54	VM71	21	1,555,720	1,492,191	3,828	1,478	Bac Giang	N-T	Bac Giang
+Bac Lieu	VN.BL	55	VM73	99	856,250	736,325	2,502	966	Bac Lieu	S-C	Ba Xuyen
+Bac Ninh	VN.BN	56	VM74	16	1,024,151	941,389	823	318	Bac Ninh	N-T	Bac Ninh
+Ba Ria-Vung Tau	VN.BV	43	VM45	74	994,837	800,568	1,987	767	Vung Tau	S-C	Phuoc Tuy
+Ben Tre	VN.BR	50	VM03	83	1,254,589	1,296,914	2,360	911	Ben Tre	S-C	Kien Hoa
+Binh Dinh	VN.BD	31	VM46	53	1,485,943	1,461,046	6,040	2,332	Qui Nhon	S-A	Binh Dinh
+Binh Duong	VN.BI	57	VM75	72	1,482,636	716,427	2,695	1,041	Thu Dau Mot	S-C	Binh Duong
+Binh Phuoc	VN.BP	58	VM76	77	874,961	653,644	6,875	2,654	Dong Xoai	S-C	Binh Long, Phuoc Long
+Binh Thuan	VN.BU	40	VM47	62	1,169,450	1,047,040	7,810	3,015	Phan Thiet	S-A	Binh Thuan, Binh Tuy
+Ca Mau	VN.CM	59	VM77	96	1,205,108	1,117,829	5,332	2,059	Ca Mau	S-C	An Xuyen
+Can Tho	VN.CN	CT	VM87	92	1,187,089	1,112,000	1,402	541	Can Tho	S-C	Chuong Thien, Phong Dinh
+Cao Bang	VN.CB	04	VM05	22	510,884	490,700	6,725	2,597	Cao Bang	N-T	Cao Bang
+Dac Lac	VN.DC	33	VM88	55	1,728,380	1,666,800	13,125	5,068	Buon Ma Thuot	S-A	Daklak, Darlac, Quang Duc
+Dac Nong	VN.DO	72	VM91	55	489,442	362,110	6,516	2,516	Gia Nghia	S-A	Daklak, Darlac, Quang Duc
+Da Nang	VN.DA	DN	VM78	59	887,069	684,131	1,283	495	Da Nang	S-A	Quang Nam
+Dien Bien	VN.DB	71	VM92	28	491,046	440,330	9,563	3,692	Dien Bien Phu	N-T	Lai Chau
+Dong Nai	VN.DN	39	VM43	71	2,483,211	1,989,541	5,903	2,279	Bien Hoa	S-C	Bien Hoa, Long Khanh, Phuoc Thanh
+Dong Thap	VN.DT	45	VM09	93	1,665,420	1,564,977	3,375	1,303	Cao Lanh	S-C	Kien Phong
+Gia Lai	VN.GL	30	VM49	54	1,272,792	971,920	15,537	5,999	Pleiku	S-A	Phu Bon, Pleiku
+Ha Giang	VN.HG	03	VM50	29	724,353	602,700	7,946	3,068	Ha Giang	N-T	Ha Giang
+Hai Duong	VN.HD	61	VM79	34	1,703,492	1,649,779	1,650	637	Hai Duong	N-T	Hai Duong
+Haiphong	VN.HP	HP	VM13	35	1,837,302	1,672,992	1,522	588	Haiphong	N-T	Kien An
+Ha Nam	VN.HM	63	VM80	30	785,057	791,618	860	332	Phu Ly	N-T	Phu Ly
+Hanoi	VN.HI	HN	VM44	10	6,448,837	5,058,892	3,345	1,292	Hanoi	N-T	Hanoi, Ha Dong, Son Tay
+Ha Tinh	VN.HT	23	VM52	43	1,227,554	1,269,013	6,026	2,327	Ha Tinh	N-A	Ha Tinh
+Hau Giang	VN.HU	73	VM93	92	756,625	766,100	1,601	618	Vi Thanh	S-C	Chuong Thien, Phong Dinh
+Hoa Binh	VN.HO	14	VM53	13	786,964	757,637	4,595	1,774	Hoa Binh	N-T	Hoa Binh
+Ho Chi Minh	VN.HC	SG	VM20	70	7,123,340	5,037,155	2,096	809	Ho Chi Minh City	S-C	Bien Hoa, Gia Dinh, Hau Nghia
+Hung Yen	VN.HY	66	VM81	39	1,128,702	1,068,705	923	356	Hung Yen	N-T	Hung Yen
+Khanh Hoa	VN.KH	34	VM54	57	1,156,903	1,031,262	5,218	2,015	Nha Trang	S-A	Khanh Hoa
+Kien Giang	VN.KG	47	VM21	95	1,683,149	1,494,433	6,346	2,450	Rach Gia	S-C	Kien Giang
+Kon Tum	VN.KT	28	VM55	58	430,037	314,042	9,691	3,742	Kon Tum	S-A	Kontum
+Lai Chau	VN.LI	01	VM89	28	370,135	313,510	9,112	3,518	Phong Tho	N-T	Lai Chau
+Lam Dong	VN.LD	35	VM23	61	1,186,786	996,219	9,772	3,773	Da Lat	S-A	Lam Dong, Tuyen Duc
+Lang Son	VN.LS	09	VM39	20	731,887	704,643	8,324	3,214	Lang Son	N-T	Lang Son
+Lao Cai	VN.LO	02	VM90	19	613,075	594,637	6,384	2,465	Lao Cai	N-T	Lao Cai
+Long An	VN.LA	41	VM24	81	1,436,914	1,306,202	4,494	1,735	Tan An	S-C	Long An, Hau Nghia, Kien Tuong
+Nam Dinh	VN.ND	67	VM82	32	1,825,771	1,888,400	1,653	638	Nam Dinh	N-T	Nam Dinh
+Nghe An	VN.NA	22	VM58	42	2,913,055	2,858,265	16,491	6,367	Vinh	N-A	Nghe An
+Ninh Binh	VN.NB	18	VM59	40	898,459	884,080	1,389	536	Ninh Binh	N-T	Ninh Binh
+Ninh Thuan	VN.NT	36	VM60	63	564,129	503,048	3,358	1,297	Phan Rang-Thap Cham	S-A	Ninh Thuan
+Phu Tho	VN.PT	68	VM83	24	1,313,926	1,261,500	3,532	1,364	Viet Tri	N-T	Phu Tho
+Phu Yen	VN.PY	32	VM61	56	861,993	786,972	5,061	1,954	Tuy Hoa	S-A	Phu Yen
+Quang Binh	VN.QB	24	VM62	45	846,924	793,863	8,065	3,114	Dong Hoi	N-A	Quang Binh
+Quang Nam	VN.QM	27	VM84	51	1,419,503	1,372,424	10,438	4,030	Tam Ky	S-A	Quang Nam, Quang Tin
+Quang Ngai	VN.QG	29	VM63	52	1,217,159	1,190,006	5,153	1,990	Quang Ngai	S-A	Quang Ngai
+Quang Ninh	VN.QN	13	VM30	36	1,144,381	1,004,461	6,099	2,355	Ha Long	N-T	Quang Yen, Hai Ninh
+Quang Tri	VN.QT	25	VM64	46	597,985	573,331	4,747	1,833	Dong Ha	S-A	Quang Tri
+Soc Trang	VN.ST	52	VM65	97	1,289,441	1,173,820	3,312	1,279	Soc Trang	S-C	Ba Xuyen
+Son La	VN.SL	05	VM32	27	1,080,641	881,383	14,174	5,473	Son La	N-T	Son La
+Tay Ninh	VN.TN	37	VM33	73	1,066,402	965,240	4,049	1,563	Tay Ninh	S-C	Tay Ninh
+Thai Binh	VN.TB	20	VM35	33	1,780,954	1,785,600	1,567	605	Thai Binh	N-T	Thai Binh
+Thai Nguyen	VN.TY	69	VM85	23	1,124,786	1,046,163	3,526	1,361	Thai Nguyen	N-T	Thai Nguyen
+Thanh Hoa	VN.TH	21	VM34	41	3,400,239	3,467,609	11,133	4,298	Thanh Hoa	N-A	Thanh Hoa
+Thua Thien-Hue	VN.TT	26	VM66	47	1,087,579	1,045,134	5,063	1,955	Hué	S-A	Thua Thien
+Tien Giang	VN.TG	46	VM37	82	1,670,216	1,605,147	2,484	959	My Tho	S-C	Go Cong, Dinh Tuong
+Tra Vinh	VN.TV	51	VM67	90	1,000,933	965,712	2,295	886	Tra Vinh	S-C	Vinh Binh
+Tuyen Quang	VN.TQ	07	VM68	25	725,467	675,110	5,870	2,266	Tuyen Quang	N-T	Tuyen Quang
+Vinh Long	VN.VL	49	VM69	91	1,028,365	1,010,486	1,479	571	Vinh Long	S-C	Vinh Long
+Vinh Phuc	VN.VC	70	VM86	11	1,000,838	1,091,973	1,232	476	Vinh Yen	N-T	Vinh Yen, Phuc Yen
+Yen Bai	VN.YB	06	VM70	26	740,905	679,700	6,899	2,664	Yen Bai	N-T	Yen Bai
