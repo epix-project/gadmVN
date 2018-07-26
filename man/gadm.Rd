@@ -49,20 +49,20 @@ covariables.
 \examples{
 # Plotting the map of Vietnamese provinces as of today:
 pr <- gadm()
-plot(pr)
+sp::plot(pr)
 
 # The same, with random colors:
-plot(pr, col = 1:4)
+sp::plot(pr, col = 1:4)
 
 # Plotting only the country boundaries:
 vn <- gadm(level = "country")
-plot(vn, col = "grey")
+sp::plot(vn, col = "grey")
 
 # Visualizing the maps of provinces for all the years where their boundaries
 # changed:
 vn <- lapply(c(1979, 1990:1992, 1997, 2004, 2008), gadm)
 opar <- par(mfrow = c(2, 4))
-for(i in vn) plot(i)
+for(i in vn) sp::plot(i)
 par(opar)
 
 # ploting the province of Ha Noi before and after 2008, for 2 values of
@@ -72,28 +72,28 @@ vn2_low <- gadm(2008)
 vn1_high <- gadm(2007, res = "high")
 vn2_high <- gadm(2008, res = "high")
 opar <- par(mfrow = c(2, 2))
-plot(vn1_low[vn1_low$province \%in\% c("Ha Noi", "Ha Tay"), ])
+sp::plot(vn1_low[vn1_low$province \%in\% c("Ha Noi", "Ha Tay"), ])
 title("2007, low resolution")
-plot(vn2_low[vn2_low$province == "Ha Noi", ])
+sp::plot(vn2_low[vn2_low$province == "Ha Noi", ])
 title("2008, low resolution")
-plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ])
+sp::plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ])
 title("2007, high resolution")
-plot(vn2_high[vn2_high$province == "Ha Noi", ])
+sp::plot(vn2_high[vn2_high$province == "Ha Noi", ])
 title("2008, high resolution")
 par(opar)
-plot(vn1_low)
+sp::plot(vn1_low)
 
 # Showing the same thing on the whole map of Vietnam:
-plot(vn1_low)
-plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
+sp::plot(vn1_low)
+sp::plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
      col = c("red","blue"), add=TRUE)
-plot(vn2_low)
-plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey", add = TRUE)
+sp::plot(vn2_low)
+sp::plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey", add = TRUE)
 
 # Here we can see that the 2008 delimitation of the province of Ha Noi is
 # more than the merging of the provinces of Ha Tay and Ha Noi:
-plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey")
-plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
+sp::plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey")
+sp::plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
      col = c("red", "blue"), add = TRUE)
 }
 \author{
