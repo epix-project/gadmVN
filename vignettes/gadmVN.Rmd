@@ -11,7 +11,7 @@ vignette: >
 
 ```{r include = FALSE}
 knitr::knit_hooks$set(margin = function(before, options, envir) {
-  if (before) par(mgp = c(1.5, .5, 0), bty = "n", plt = c(.105, .97, .13, .97))
+  if (before) par(mgp = c(1.5, .5, 0), bty = "n", plt = c(0, 1, 0, 1))
   else NULL
 })
 
@@ -72,9 +72,9 @@ Plotting the 8 regions of Vietnam:
 
 ```{r}
 provinces <- gadm()
-sp::plot(provinces, col = provinces$color)
-leg <- unique(provinces@data[, c("region", "color")])
-legend("topright", legend = leg$region, fill = leg$color, bty = "n")
+sp::plot(provinces, col = provinces$color_economic)
+leg <- unique(provinces@data[, c("region_economic", "color_economic")])
+legend("topright", legend = leg$region_economic, fill = leg$color_economic, bty = "n")
 ```
 
 ## Additional check-up
@@ -83,37 +83,37 @@ Here is the code only, the text needs to be written.
 
 ```{r}
 m2015 <- gadm()
-plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+sp::plot(subset(m2015, region_economic %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
 box(bty = "o")
-plot(m2015, add = TRUE)
-plot(subset(m2015, province == "Ha Noi"), add = TRUE, col = "blue")
-plot(subset(m2015, province == "Hoa Binh"), add = TRUE, col = "green")
+sp::plot(m2015, add = TRUE)
+sp::plot(subset(m2015, province == "Ha Noi"), add = TRUE, col = "blue")
+sp::plot(subset(m2015, province == "Hoa Binh"), add = TRUE, col = "green")
 ```
 
 ```{r}
 m2007 <- gadm(2007)
-plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+sp::plot(subset(m2015, region_economic %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
 box(bty = "o")
-plot(m2007, add = TRUE)
-plot(subset(m2007, province == "Ha Noi"), add = TRUE, col = "blue")
-plot(subset(m2007, province == "Ha Tay"), add = TRUE, col = "yellow")
-plot(subset(m2007, province == "Hoa Binh"), add = TRUE, col = "green")
+sp::plot(m2007, add = TRUE)
+sp::plot(subset(m2007, province == "Ha Noi"), add = TRUE, col = "blue")
+sp::plot(subset(m2007, province == "Ha Tay"), add = TRUE, col = "yellow")
+sp::plot(subset(m2007, province == "Hoa Binh"), add = TRUE, col = "green")
 ```
 
 ```{r}
 m1991 <- gadm(1991, merge_hanoi = T)
-plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+sp::plot(subset(m2015, region_economic %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
 box(bty = "o")
-plot(m1991, add = TRUE)
-plot(subset(m1991, province == "Ha Noi"), add = TRUE, col = "blue")
+sp::plot(m1991, add = TRUE)
+sp::plot(subset(m1991, province == "Ha Noi"), add = TRUE, col = "blue")
 ```
 
 ```{r}
 m2003 <- gadm(2003, merge_hanoi = T)
-plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+sp::plot(subset(m2015, region_economic %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
 box(bty = "o")
-plot(m2003, add = TRUE)
-plot(subset(m2003, province == "Ha Noi"), add = TRUE, col = "blue")
+sp::plot(m2003, add = TRUE)
+sp::plot(subset(m2003, province == "Ha Noi"), add = TRUE, col = "blue")
 ```
 
 
