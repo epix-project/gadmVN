@@ -24,7 +24,7 @@ be merged with the province of Ha Son Binh (before 1992) or the province of
 Ha Tay (after 1991).}
 }
 \value{
-An object of class "SpatialPolygonsDataFrame".
+An object of class "sf" and "data.frame".
 }
 \description{
 Generates a country or provinces map of Vietnam for a given date and
@@ -47,22 +47,40 @@ information to know whenever the user wishes to use these maps to plot
 covariables.
 }
 \examples{
+
+library(sf)
+
+# BASIC USAGE ---------------------------------------------------------------
+
 # Plotting the map of Vietnamese provinces as of today:
 pr <- gadm()
-sp::plot(pr)
+plot(st_geometry(pr))
+# other way of plotting
+plot(pr["province"]) # by default a color key is given
 
 # The same, with random colors:
-sp::plot(pr, col = 1:4)
+plot(st_geometry(pr), col = 1:4)
 
 # Plotting only the country boundaries:
 vn <- gadm(level = "country")
-sp::plot(vn, col = "grey")
+plot(st_geometry(vn), col = "grey")
+
+# SF TO SP ------------------------------------------------------------------
+
+# The `pr` object is an object of class `sf` and `data.frame`. For more
+# complexe analyses, it a be interresting to work with an object of class
+# `SpatialPolygonsDataFrame` from the `sp` package:
+sp_vn <- sf::as_Spatial(pr$geometry)
+sp::plot(sp_vn)
+
+
+# MORE COMPLEXE EXAMPLE OF VISUALISATION ------------------------------------
 
 # Visualizing the maps of provinces for all the years where their boundaries
 # changed:
 vn <- lapply(c(1979, 1990:1992, 1997, 2004, 2008), gadm)
 opar <- par(mfrow = c(2, 4))
-for(i in vn) sp::plot(i)
+for(i in vn) plot(st_geometry(i))
 par(opar)
 
 # ploting the province of Ha Noi before and after 2008, for 2 values of
@@ -72,28 +90,29 @@ vn2_low <- gadm(2008)
 vn1_high <- gadm(2007, res = "high")
 vn2_high <- gadm(2008, res = "high")
 opar <- par(mfrow = c(2, 2))
-sp::plot(vn1_low[vn1_low$province \%in\% c("Ha Noi", "Ha Tay"), ])
+plot(st_geometry(vn1_low[vn1_low$province \%in\% c("Ha Noi", "Ha Tay"), ]))
 title("2007, low resolution")
-sp::plot(vn2_low[vn2_low$province == "Ha Noi", ])
+plot(st_geometry(vn2_low[vn2_low$province == "Ha Noi", ]))
 title("2008, low resolution")
-sp::plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ])
+plot(st_geometry(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ]))
 title("2007, high resolution")
-sp::plot(vn2_high[vn2_high$province == "Ha Noi", ])
+plot(st_geometry(vn2_high[vn2_high$province == "Ha Noi", ]))
 title("2008, high resolution")
 par(opar)
-sp::plot(vn1_low)
+plot(st_geometry(vn1_low))
 
 # Showing the same thing on the whole map of Vietnam:
-sp::plot(vn1_low)
-sp::plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
+plot(st_geometry(vn1_low))
+plot(st_geometry(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ]),
      col = c("red","blue"), add=TRUE)
-sp::plot(vn2_low)
-sp::plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey", add = TRUE)
+plot(st_geometry(vn2_low))
+plot(st_geometry(vn2_high[vn2_high$province == "Ha Noi", ]),
+     col = "grey", add = TRUE)
 
 # Here we can see that the 2008 delimitation of the province of Ha Noi is
 # more than the merging of the provinces of Ha Tay and Ha Noi:
-sp::plot(vn2_high[vn2_high$province == "Ha Noi", ], col = "grey")
-sp::plot(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ],
+plot(st_geometry(vn2_high[vn2_high$province == "Ha Noi", ]), col = "grey")
+plot(st_geometry(vn1_high[vn1_high$province \%in\% c("Ha Noi", "Ha Tay"), ]),
      col = c("red", "blue"), add = TRUE)
 }
 \author{
