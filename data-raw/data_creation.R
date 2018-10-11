@@ -8,57 +8,6 @@ tolerance <- .01    # the tolerance parameter of the thinning function
 
 # Functions --------------------------------------------------------------------
 
-## SELECT EVENT AND RETURN LIST FROM THE MOST RECENT TO THE OLDER
-select_events <- function(hist_lst, from, to) {
-  sel0 <- purrr::map(hist_lst, "year") %>% unlist %>% as.Date()
-  sel0 <- sel0 > as.Date(paste0(from, "-01-01")) &
-    sel0 <= as.Date(paste0(to, "-12-31"))
-  event_lst <- hist_lst[sel0]
-  event_lst[order(sapply(event_lst, "[[", "year"), decreasing = TRUE)]
-}
-
-## MERGE BACK PROVINCE ACCORDINGLY TO THE HISTORY INPUT IN A LIST (event_lst)
-update_province_sf <- function(df, event_lst) {
-
-  for (i in seq_along(event_lst)) {
-    # select one event
-    event <- event_lst[[i]]
-
-    # For the split event
-    if (event$event == "split") {
-      # Split the data frame to select the province that we need to merge
-      # together
-      tmp <-  split(df, f = df$province %in% event$after %>% unlist)
-      # calculate the new geometry
-      geom <- st_union(tmp$`TRUE`) %>% st_cast("MULTIPOLYGON")
-      # Update the new spatial definition (name and geometry) in the data frame
-      # selected
-      tmp$`TRUE` %<>% mutate(province = event$before %>% unlist,
-                             geometry = geom) %>%
-        distinct
-      # Update the new information in the general data frame
-      df <- rbind(tmp$`TRUE`, tmp$`FALSE`) %>% arrange(province)
-    }
-
-    # Event rename
-    if (event$event == "rename") {
-      df %<>% mutate(province = gsub(event$before, event$after, province))
-    }
-  }
-  df %>% arrange(province)
-}
-
-## CREATE OLD GADM MAP
-old_map <- function(df_sf, history_lst, from, to) {
-  # Prepare the data frame
-  df <-  select(df_sf, province, geometry)
-  # Select event
-  event_lst <- select_events(history_lst, from = from, to = to)
-  # Merge back province together
-  df <- update_province_sf(df, event_lst)
-  df %>% arrange(province)
-}
-
 # Thinning (simplification)
 thin_polygons <- function(sf_obj, tolerance) {
   sf_obj %<>% as_Spatial(.) %>%
@@ -81,7 +30,7 @@ merge_hanoi <- function(sf_obj){
   list_ha <- list(list(year = "2008-01-01", event = "split", before = "Ha Noi",
                       after = c("Ha Son Binh", "Ha Tay", "Ha Noi")))
   # Create a new map
-  new_map <- old_map(sf_obj, list_ha, from = "1979", to = "2008") %>%
+  new_map <- sf_aggregate_lst(sf_obj, list_ha, from = "1979", to = "2008") %>%
     arrange(province)
 }
 
@@ -91,6 +40,7 @@ merge_hanoi <- function(sf_obj){
 gadm0r <- sptools::gadm("Vietnam", "sf", 0) %>% select(-GID_0) %>%
   rename(country = NAME_0)
 gadm1_08_20r <- sptools::gadm("Vietnam", "sf", 1)
+file.remove("gadm36_VNM_0_sf.rds", "gadm36_VNM_1_sf.rds")
 # Coming from old gadm file:
 load("data-raw/VNM_adm2.RData")  # the 64 provinces from 2004 to 2007
 gadm1_04_07r <- st_as_sf(gadm)
@@ -110,11 +60,16 @@ gadm1_04_07r %<>%
 
 # Generating the historical provinces maps -------------------------------------
 
-gadm1_97_03r <- old_map(gadm1_04_07r, vn_history, from = "1997", to = "2004")
-gadm1_92_96r <- old_map(gadm1_97_03r, vn_history, from = "1992", to = "1997")
-gadm1_91_91r <- old_map(gadm1_04_07r, vn_history, from = "1991", to = "2004")
-gadm1_90_90r <- old_map(gadm1_04_07r, vn_history, from = "1990", to = "2004")
-gadm1_79_89r <- old_map(gadm1_04_07r, vn_history, from = "1979", to = "2004")
+gadm1_97_03r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1997",
+                                 to = "2004")
+gadm1_92_96r <- sf_aggregate_lst(gadm1_97_03r, vn_history, from = "1992",
+                                 to = "1997")
+gadm1_91_91r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1991",
+                                 to = "2004")
+gadm1_90_90r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1990",
+                                 to = "2004")
+gadm1_79_89r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1979",
+                                 to = "2004")
 
 # tests if province are corresponding
 setdiff(gadm1_79_89r$province, vn_province_year$`1979`)
