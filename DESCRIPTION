@@ -12,8 +12,9 @@ Authors@R: c(person("Marc", "Choisy",
                     comment = c(ORCID = "https://orcid.org/0000-0001-5797-1279")))
 Description: Contains the country and provinces maps of Vietnam from GADM (version 3.6).
 License: MIT + file LICENSE
+Encoding: UTF-8
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Imports:
     sp
 Depends:
