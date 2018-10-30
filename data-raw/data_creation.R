@@ -2,7 +2,8 @@
 library(maptools)    # for "thinnedSpatialPoly"
 library(sptools)     # for "gadm" (package from "github/choisy")
 library(dictionary)  # for "vn_province"
-library(dplyr)       # for "select", "filter", "mutate","arrange", "left_join"
+library(dplyr)       # for "select", "filter", "mutate","arrange", "left_join",
+# "bind_rows"
 library(sf)          # for "st_union", "st_cast", "as_Spatial", "st_as_sf"
 tolerance <- .01    # the tolerance parameter of the thinning function
 
@@ -40,11 +41,9 @@ merge_hanoi <- function(sf_obj){
 gadm0r <- sptools::gadm("Vietnam", "sf", 0) %>% select(-GID_0) %>%
   rename(country = NAME_0)
 gadm1_08_20r <- sptools::gadm("Vietnam", "sf", 1)
-file.remove("gadm36_VNM_0_sf.rds", "gadm36_VNM_1_sf.rds")
-# Coming from old gadm file:
-load("data-raw/VNM_adm2.RData")  # the 64 provinces from 2004 to 2007
-gadm1_04_07r <- st_as_sf(gadm)
 
+# Coming from old gadm file:
+gadm1_04_07r <- readRDS("data-raw/gadm_vn_0407.rds")  # the 64 provinces from 2004 to 2007
 
 # Translate the province from Vietnamese to a column "province" in English -----
 gadm1_08_20r %<>%
@@ -72,13 +71,13 @@ gadm1_79_89r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1979",
                                  to = "2004")
 
 # tests if province are corresponding
-setdiff(gadm1_79_89r$province, vn_province_year$`1979`)
-setdiff(gadm1_90_90r$province, vn_province_year$`1990`)
-setdiff(gadm1_91_91r$province, vn_province_year$`1991`)
-setdiff(gadm1_92_96r$province, vn_province_year$`1992`)
-setdiff(gadm1_97_03r$province, vn_province_year$`1997`)
-setdiff(gadm1_04_07r$province, vn_province_year$`2004`)
-setdiff(gadm1_08_20r$province, vn_province_year$`2008`)
+setdiff(gadm1_79_89r$province, vn_province_year$`1979-1990`)
+setdiff(gadm1_90_90r$province, vn_province_year$`1990-1991`)
+setdiff(gadm1_91_91r$province, vn_province_year$`1991-1992`)
+setdiff(gadm1_92_96r$province, vn_province_year$`1992-1997`)
+setdiff(gadm1_97_03r$province, vn_province_year$`1997-2004`)
+setdiff(gadm1_04_07r$province, vn_province_year$`2004-2008`)
+setdiff(gadm1_08_20r$province, vn_province_year$`2008-2020`)
 
 # Thinning ---------------------------------------------------------------------
 
@@ -169,6 +168,28 @@ regions %<>% mutate(color_economic = colors_eco[region_economic])
 
 gadm1_08_20 %<>% left_join(regions, by = "province") %>% arrange(province)
 gadm1_08_20r %<>% left_join(regions, by = "province") %>% arrange(province)
+
+# Defining population centroid -------------------------------------------------
+
+gadm1_08_20 %<>% as_Spatial() %>%
+  sptools::as_list() %>%
+  purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
+  purrr::map(raster::rasterToPoints, spatial = TRUE) %>%
+  purrr::map(weighted_centroid) %>%
+  purrr::reduce(bind_rows) %>%
+  mutate(province = gadm1_08_20$province) %>%
+  left_join(gadm1_08_20r, ., by = "province") %>%
+  select("province", everything())
+
+gadm1_08_20r %<>% as_Spatial() %>%
+  sptools::as_list() %>%
+  purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
+  purrr::map(raster::rasterToPoints, spatial = TRUE) %>%
+  purrr::map(weighted_centroid) %>%
+  purrr::reduce(bind_rows) %>%
+  mutate(province = gadm1_08_20r$province) %>%
+  left_join(gadm1_08_20r, ., by = "province") %>%
+  select("province", everything())
 
 # Saving -----------------------------------------------------------------------
 
