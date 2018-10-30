@@ -36,7 +36,21 @@ date, and for a given resolution. Indeed, the delimitations of Vietnamese
 provinces have changed through the history with the number of provinces
 increasing from 40 in 1979 to 63 in 2008. Most of the events are province
 splits and one merging. Changes is provinces boundaries occured on the 1st of
-January of 1979, 1990, 1991, 1992, 1997, 2004 and 2008.
+January of 1979, 1990, 1991, 1992, 1997, 2004 and 2008. \cr\cr
+The maps generated for a time after 2008 contained different information:
+\tabular{ll}{
+  Column Names \tab Description \cr
+  province \tab name of the province in English \cr
+  region \tab name of the ecologic region in English \cr
+  color_ecologic \tab color associated with the ecologic region \cr
+  region_economic \tab name of the region economic in English  \cr
+  color_economic \tab color associated with the economic region\cr
+  x \tab  longitude of the population weighted centroid of the province \cr
+  y \tab latitude of the population weighted centroid of the province \cr
+  geometry \tab list-column with geometries \cr
+ }
+ Wheras the map generated for a time before 2008, only the columns
+ \code{"province"} and \code{"geometry"}.
 }
 \note{
 argument \code{merge_hanoi} makes a difference only for \code{date}
