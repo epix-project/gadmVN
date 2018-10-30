@@ -11,7 +11,7 @@ vignette: >
 
 ```{r include = FALSE}
 knitr::knit_hooks$set(margin = function(before, options, envir) {
-  if (before) par(mgp = c(1.5, .5, 0), bty = "n", plt = c(.105, .97, .13, .97))
+  if (before) par(mgp = c(1.5, .5, 0), bty = "n", plt = c(0, 1, 0, 1))
   else NULL
 })
 
@@ -38,12 +38,13 @@ Once installed, you can load the package:
 
 ```{r}
 library(gadmVN)
+library(sf)
 ```
 
 
 ## Usage examples
 
-`SpatialPolygonsDataFrame` can be retrieved thanks to the `gadm` function. The
+`sf` can be retrieved thanks to the `gadm` function. The 
 first argument is the date at which we want the map (either a text in the
 "YYYY-MM-DD" format or a 4-digit numeric format of the year). The second
 argument specifies the level we are interested in (either "provinces" or
@@ -61,20 +62,18 @@ pr <- gadm(1992)
 Maping 4 categories of provinces according to latitude:
 
 ```{r}
-latitudes <- sp::coordinates(pr)[, 2]
+latitudes <- sapply(seq_len(dim(pr)[1]), FUN = function(x) st_coordinates(pr[x,])[, 2] %>% mean())
 breaks <- seq(min(latitudes), max(latitudes), le = 5)
 palette <- c("red", "blue", "green", "orange")
 colors <- palette[as.numeric(cut(latitudes, breaks, include = TRUE))]
-sp::plot(pr, col = colors)
+plot(st_geometry(pr), col = colors)
 ```
 
 Plotting the 8 regions of Vietnam:
 
 ```{r}
 provinces <- gadm()
-sp::plot(provinces, col = provinces$color)
-leg <- unique(provinces@data[, c("region", "color")])
-legend("topright", legend = leg$region, fill = leg$color, bty = "n")
+plot(provinces["region_economic"])
 ```
 
 ## Additional check-up
@@ -83,37 +82,37 @@ Here is the code only, the text needs to be written.
 
 ```{r}
 m2015 <- gadm()
-plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+plot(st_geometry(subset(m2015, region_economic %in% c("Northeast", "Northwest", "Red River Delta"))))
 box(bty = "o")
-plot(m2015, add = TRUE)
-plot(subset(m2015, province == "Ha Noi"), add = TRUE, col = "blue")
-plot(subset(m2015, province == "Hoa Binh"), add = TRUE, col = "green")
+plot(st_geometry(m2015), add = TRUE)
+plot(st_geometry(subset(m2015, province == "Ha Noi")), add = TRUE, col = "blue")
+plot(st_geometry(subset(m2015, province == "Hoa Binh")), add = TRUE, col = "green")
 ```
 
 ```{r}
 m2007 <- gadm(2007)
-plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+plot(st_geometry(subset(m2015, region_economic %in% c("Northeast", "Northwest", "Red River Delta"))))
 box(bty = "o")
-plot(m2007, add = TRUE)
-plot(subset(m2007, province == "Ha Noi"), add = TRUE, col = "blue")
-plot(subset(m2007, province == "Ha Tay"), add = TRUE, col = "yellow")
-plot(subset(m2007, province == "Hoa Binh"), add = TRUE, col = "green")
+plot(st_geometry(m2007), add = TRUE)
+plot(st_geometry(subset(m2007, province == "Ha Noi")), add = TRUE, col = "blue")
+plot(st_geometry(subset(m2007, province == "Ha Tay")), add = TRUE, col = "yellow")
+plot(st_geometry(subset(m2007, province == "Hoa Binh")), add = TRUE, col = "green")
 ```
 
 ```{r}
 m1991 <- gadm(1991, merge_hanoi = T)
-plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+plot(st_geometry(subset(m2015, region_economic %in% c("Northeast", "Northwest", "Red River Delta"))))
 box(bty = "o")
-plot(m1991, add = TRUE)
-plot(subset(m1991, province == "Ha Noi"), add = TRUE, col = "blue")
+plot(st_geometry(m1991), add = TRUE)
+plot(st_geometry(subset(m1991, province == "Ha Noi")), add = TRUE, col = "blue")
 ```
 
 ```{r}
 m2003 <- gadm(2003, merge_hanoi = T)
-plot(subset(m2015, region %in% c("Northeast", "Northwest", "Red River Delta")), border = "white")
+plot(st_geometry(subset(m2015, region_economic %in% c("Northeast", "Northwest", "Red River Delta"))))
 box(bty = "o")
-plot(m2003, add = TRUE)
-plot(subset(m2003, province == "Ha Noi"), add = TRUE, col = "blue")
+plot(st_geometry(m2003), add = TRUE)
+plot(st_geometry(subset(m2003, province == "Ha Noi")), add = TRUE, col = "blue")
 ```
 
 
