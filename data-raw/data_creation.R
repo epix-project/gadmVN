@@ -1,388 +1,195 @@
-library(maptools)      # for "thinnedSpatialPoly", "unionSpatialPolygons"
-library(censusVN2009)  # for "provinces" and "provinces_r"                 #####
+# Packages and System ----------------------------------------------------------
+library(maptools)    # for "thinnedSpatialPoly"
+library(sptools)     # for "gadm" (package from "github/choisy")
+library(dictionary)  # for "vn_province"
+library(dplyr)       # for "select", "filter", "mutate","arrange", "left_join",
+# "bind_rows"
+library(sf)          # for "st_union", "st_cast", "as_Spatial", "st_as_sf"
 tolerance <- .01    # the tolerance parameter of the thinning function
 
+# Functions --------------------------------------------------------------------
 
-# Downloading the country and provinces maps from GADM (www.gadm.org) ----------
+# Thinning (simplification)
+thin_polygons <- function(sf_obj, tolerance) {
+  sf_obj %<>% as_Spatial(.) %>%
+    thinnedSpatialPoly(tolerance) %>%
+    st_as_sf(.)
+}
 
-#getdata <- function(x)
-#  raster::getData("GADM", country = "VNM", level = x, path = "data-raw")
-#gadm0r <- getdata(0)
-gadm0r <- raster::getData("GADM", country = "VNM", level = 0, path = "data-raw")
-## gadm1_08_20r <- getdata(1)
-data("provinces_r", "provinces")                                           #####
-gadm1_08_20r <- provinces_r                                                #####
-gadm1_08_20 <- provinces                                                   #####
-load("data-raw/VNM_adm2.RData")  # the 64 provinces from 2004 to 2007
-gadm1_04_07r <- gadm
+# Define new boundaries box and projections of a sf object
+define_bbox_proj <- function(sf_obj, boundbox, crs) {
+  attr(sf_obj[["geometry"]], "bbox") <- boundbox
+  attr(sf_obj[["geometry"]], "crs") <- crs
+  sf_obj
+}
 
+# Function to define new map with the Hanoi, Ha Tay, Hoa Binh, Hoa Son Binh
+# merged
+merge_hanoi <- function(sf_obj){
 
+  # Create a list special to merge Hanoi, Ha Tay, Hoa Son Binh as Ha Noi
+  list_ha <- list(list(year = "2008-01-01", event = "split", before = "Ha Noi",
+                      after = c("Ha Son Binh", "Ha Tay", "Ha Noi")))
+  # Create a new map
+  new_map <- sf_aggregate_lst(sf_obj, list_ha, from = "1979", to = "2008") %>%
+    arrange(province)
+}
 
-# The hash table for the new provinces names variable --------------------------
+# Downloading the actual country and provinces maps from GADM (www.gadm.org) ---
 
-dictionary <- c(              "Bac Kan|Bac Can" = "Bac Kan",
-                         "Da Nang City|Da Nang" = "Da Nang",
-                              "Dak Lak|Dac Lac" = "Dak Lak",
-                                     "Dac Nong" = "Dak Nong",
-                            "Ha Noi City|Hanoi" = "Ha Noi",
-                      "Hai Phong City|Haiphong" = "Hai Phong",
-                 "Ho Chi Minh City|Ho Chi Minh" = "Ho Chi Minh",
-                "Ba Ria - VTau|Ba Ria-Vung Tau" = "Ba Ria - Vung Tau")
+# Actual administrative boundaries:
+gadm0r <- sptools::gadm("Vietnam", "sf", 0) %>% select(-GID_0) %>%
+  rename(country = NAME_0)
+gadm1_08_20r <- sptools::gadm("Vietnam", "sf", 1)
 
+# Coming from old gadm file:
+gadm1_04_07r <- readRDS("data-raw/gadm_vn_0407.rds")  # the 64 provinces from 2004 to 2007
 
+# Translate the province from Vietnamese to a column "province" in English -----
+gadm1_08_20r %<>%
+  mutate(province = stringi::stri_escape_unicode(NAME_1) %>%
+           vn_province[.]) %>%
+  select(province, geometry)
 
-# ------------------------------------------------------------------------------
-
-#province <- sub("Ba Ria-Vung Tau", "Ba Ria - Vung Tau", gadm1_08_20r@data$NAME_ENG)
-#province <- sub("Thua Thien Hue", "Thua Thien - Hue", province)            #####
-#pr <- as.data.frame(province, stringsAsFactors = FALSE)                    #####
-#rownames(pr) <- province                                                   #####
-#gadm1_08_20@data <- pr                                                     #####
-#gadm1_08_20r@data <- pr                                                    #####
-#for (i in seq_along(gadm1_08_20@polygons))                                 #####
-#  gadm1_08_20@polygons[[i]]@ID <- province[i]                              #####
-#for (i in seq_along(gadm1_08_20r@polygons))                                #####
-#  gadm1_08_20r@polygons[[i]]@ID <- province[i]                             #####
-
-
-
-# ------------------------------------------------------------------------------
-
-
-# Fixing gadm1_08_20r ----------------------------------------------------------
-
-# The object gadm1_08_20r cannot be thinned right away because there is an issue
-# in this object: 2 provinces are duplicated. The code below fixes that issue:
-## dataframe <- gadm1_08_20r@data   # the data frame of the provinces
-## province <- dataframe$VARNAME_1  # the names of the provinces
-# Merging the polygons by provinces.
-# This has the side effects of
-#   * removing the data frame;
-#   * putting province as IDs of the polygons.
-## tmp <- province[!province %in% names(dictionary)]
-## hash <- c(dictionary, setNames(tmp, tmp))
-## province <- hash[province]
-## dataframe$province <- province
-## gadm1_08_20r <- unionSpatialPolygons(gadm1_08_20r, province)
-
-
-
-# thinning gadm1_08_20r:
-## dataframe <- subset(dataframe, CCA_1 != "0") # remove the provinces with CCA_1 = 0
-# Putting back the fixed data frame (i.e. fixing the first side effect).
-# This in turn has the side effects of
-#   * changing the order of the rows of the data frame so that its variable
-#     "province" is in the same order as the ID of the polygons);
-#   * putting the variable "province" as the rownames of the data frame.
-## gadm1_08_20r <- SpatialPolygonsDataFrame(gadm1_08_20r, dataframe, "province")
-
-
-
-# Same for gadm1_04_07r --------------------------------------------------------
-
-dataframe <- gadm1_04_07r@data
-province <- dataframe$VARNAME_2
-tmp <- province[!province %in% names(dictionary)]
-hash <- c(dictionary, setNames(tmp, tmp))
-province <- hash[province]
-dataframe$province <- province
-gadm1_04_07r <- unionSpatialPolygons(gadm1_04_07r, province)
-gadm1_04_07r <- SpatialPolygonsDataFrame(gadm1_04_07r, dataframe, "province")
-
+gadm1_04_07r %<>%
+  mutate(province = stringi::stri_escape_unicode(NAME_2) %>%
+           vn_province[.]) %>%
+  select(province, geometry)
 
 
 # Generating the historical provinces maps -------------------------------------
 
-# From 2004 to 2007:
-prov <- sub("^Dien Bien$", "Lai Chau", gadm1_04_07r$province)
-prov <- sub("^Dak Lak$",   "Dack Lak", prov)
-prov <- sub("^Dak Nong$",  "Dack Lak", prov)
-prov <- sub("^Hau Giang$",   "Can Tho", prov)
-gadm1_97_03r <- unionSpatialPolygons(gadm1_04_07r, prov)
-IDs <- sapply(gadm1_97_03r@polygons, function(x) x@ID)
-gadm1_97_03r <- SpatialPolygonsDataFrame(gadm1_97_03r,
-                                         data.frame(province = IDs,
-                                                    row.names = IDs))
+gadm1_97_03r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1997",
+                                 to = "2004")
+gadm1_92_96r <- sf_aggregate_lst(gadm1_97_03r, vn_history, from = "1992",
+                                 to = "1997")
+gadm1_91_91r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1991",
+                                 to = "2004")
+gadm1_90_90r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1990",
+                                 to = "2004")
+gadm1_79_89r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1979",
+                                 to = "2004")
 
-# From 1997 to 2003:
-prov <- sub("^Thai Nguyen$", "Bac Thai", gadm1_97_03r$province)
-prov <- sub("^Bac Kan$",     "Bac Thai", prov)
-prov <- sub("^Vinh Phuc$",   "Vinh Phu", prov)
-prov <- sub("^Phu Tho$",     "Vinh Phu", prov)
-prov <- sub("^Bac Giang$",   "Ha Bac", prov)
-prov <- sub("^Bac Ninh$",    "Ha Bac", prov)
-prov <- sub("^Hai Duong$",   "Hai Hung", prov)
-prov <- sub("^Hung Yen$",    "Hai Hung", prov)
-prov <- sub("^Nam Dinh$",    "Nam Ha", prov)
-prov <- sub("^Ha Nam$",      "Nam Ha", prov)
-prov <- sub("^Quang Nam$",   "Quang Nam - Da Nang", prov)
-prov <- sub("^Da Nang$",     "Quang Nam - Da Nang", prov)
-prov <- sub("^Binh Duong$",  "Song Be", prov)
-prov <- sub("^Binh Phuoc$",  "Song Be", prov)
-prov <- sub("^Ca Mau$",      "Minh Hai", prov)
-prov <- sub("^Bac Lieu$",    "Minh Hai", prov)
-gadm1_92_96r <- unionSpatialPolygons(gadm1_97_03r, prov)
-IDs <- sapply(gadm1_92_96r@polygons, function(x) x@ID)
-gadm1_92_96r <- SpatialPolygonsDataFrame(gadm1_92_96r,
-                                         data.frame(province = IDs,
-                                                    row.names = IDs))
-
-# From 1992 to 1996:
-prov <- sub("^Ha Giang$",    "Ha Tuyen", gadm1_92_96r$province)
-prov <- sub("^Tuyen Quang$", "Ha Tuyen", prov)
-prov <- sub("^Yen Bai$",     "Hoang Lien Son", prov)
-prov <- sub("^Lao Cai$",     "Hoang Lien Son", prov)
-prov <- sub("^Hoa Binh$",    "Ha Son Binh", prov)
-prov <- sub("^Ha Tay$",      "Ha Son Binh", prov)
-prov <- sub("^Nam Ha$",      "Ha Nam Ninh", prov)
-prov <- sub("^Ninh Binh$",   "Ha Nam Ninh", prov)
-prov <- sub("^Gia Lai$",     "Gia Lai - Kon Tum", prov)
-prov <- sub("^Kon Tum$",     "Gia Lai - Kon Tum", prov)
-prov <- sub("^Binh Thuan$",  "Thuan Hai", prov)
-prov <- sub("^Ninh Thuan$",  "Thuan Hai", prov)
-prov <- sub("^Tra Vinh$",    "Cuu Long", prov)
-prov <- sub("^Vinh Long$",   "Cuu Long", prov)
-prov <- sub("^Can Tho$",     "Hau Giang", prov)
-prov <- sub("^Soc Trang$",   "Hau Giang", prov)
-gadm1_91_91r <- unionSpatialPolygons(gadm1_92_96r, prov)
-IDs <- sapply(gadm1_91_91r@polygons, function(x) x@ID)
-gadm1_91_91r <- SpatialPolygonsDataFrame(gadm1_91_91r,
-                                         data.frame(province = IDs,
-                                                    row.names = IDs))
-
-# For 1991:
-prov <- sub("^Nghe An$", "Nghe Tinh", gadm1_91_91r$province)
-prov <- sub("^Ha Tinh$", "Nghe Tinh", prov)
-gadm1_90_90r <- unionSpatialPolygons(gadm1_91_91r, prov)
-IDs <- sapply(gadm1_90_90r@polygons, function(x) x@ID)
-gadm1_90_90r <- SpatialPolygonsDataFrame(gadm1_90_90r,
-                                         data.frame(province = IDs,
-                                                    row.names = IDs))
-
-# For 1990:
-prov <- sub("^Quang Binh$",       "Binh Tri Thien", gadm1_90_90r$province)
-prov <- sub("^Quang Tri$",        "Binh Tri Thien", prov)
-prov <- sub("^Thua Thien - Hue$", "Binh Tri Thien", prov)
-prov <- sub("^Quang Ngai$",       "Nghia Binh", prov)
-prov <- sub("^Binh Dinh$",        "Nghia Binh", prov)
-prov <- sub("^Phu Yen$",          "Phu Khanh", prov)
-prov <- sub("^Khanh Hoa$",        "Phu Khanh", prov)
-gadm1_79_89r <- unionSpatialPolygons(gadm1_90_90r, prov)
-IDs <- sapply(gadm1_79_89r@polygons, function(x) x@ID)
-gadm1_79_89r <- SpatialPolygonsDataFrame(gadm1_79_89r,
-                                         data.frame(province = IDs,
-                                                    row.names = IDs))
-
-
-
-# Redefining the data slots for the most 2 recent maps:
-## gadm1_08_20r@data <- gadm1_08_20r@data[, "province", drop = FALSE]
-gadm1_04_07r@data <- gadm1_04_07r@data[, "province", drop = FALSE]
-
-# Making province variable in the data frame a character variable:
-gadm1_97_03r@data <- data.frame(province = as.character(gadm1_97_03r@data$province),
-                                row.names = as.character(gadm1_97_03r@data$province),
-                                stringsAsFactors = FALSE)
-gadm1_92_96r@data <- data.frame(province = as.character(gadm1_92_96r@data$province),
-                                row.names = as.character(gadm1_92_96r@data$province),
-                                stringsAsFactors = FALSE)
-gadm1_91_91r@data <- data.frame(province = as.character(gadm1_91_91r@data$province),
-                                row.names = as.character(gadm1_91_91r@data$province),
-                                stringsAsFactors = FALSE)
-gadm1_90_90r@data <- data.frame(province = as.character(gadm1_90_90r@data$province),
-                                row.names = as.character(gadm1_90_90r@data$province),
-                                stringsAsFactors = FALSE)
-gadm1_79_89r@data <- data.frame(province = as.character(gadm1_79_89r@data$province),
-                                row.names = as.character(gadm1_79_89r@data$province),
-                                stringsAsFactors = FALSE)
-
-# Features IDs -----------------------------------------------------------------
-
-gadm1_04_07r <- spChFIDs(gadm1_04_07r, as.character(seq_len(length(gadm1_04_07r))))
-gadm1_97_03r <- spChFIDs(gadm1_97_03r, as.character(seq_len(length(gadm1_97_03r))))
-gadm1_92_96r <- spChFIDs(gadm1_92_96r, as.character(seq_len(length(gadm1_92_96r))))
-gadm1_91_91r <- spChFIDs(gadm1_91_91r, as.character(seq_len(length(gadm1_91_91r))))
-gadm1_90_90r <- spChFIDs(gadm1_90_90r, as.character(seq_len(length(gadm1_90_90r))))
-gadm1_79_89r <- spChFIDs(gadm1_79_89r, as.character(seq_len(length(gadm1_79_89r))))
+# tests if province are corresponding
+setdiff(gadm1_79_89r$province, vn_province_year$`1979-1990`)
+setdiff(gadm1_90_90r$province, vn_province_year$`1990-1991`)
+setdiff(gadm1_91_91r$province, vn_province_year$`1991-1992`)
+setdiff(gadm1_92_96r$province, vn_province_year$`1992-1997`)
+setdiff(gadm1_97_03r$province, vn_province_year$`1997-2004`)
+setdiff(gadm1_04_07r$province, vn_province_year$`2004-2008`)
+setdiff(gadm1_08_20r$province, vn_province_year$`2008-2020`)
 
 # Thinning ---------------------------------------------------------------------
 
-gadm0 <- thinnedSpatialPoly(gadm0r, tolerance)
-## gadm1_08_20 <- thinnedSpatialPoly(gadm1_08_20r, tolerance)
-gadm1_04_07 <- thinnedSpatialPoly(gadm1_04_07r, tolerance)
-gadm1_97_03 <- thinnedSpatialPoly(gadm1_97_03r, tolerance)
-gadm1_92_96 <- thinnedSpatialPoly(gadm1_92_96r, tolerance)
-gadm1_91_91 <- thinnedSpatialPoly(gadm1_91_91r, tolerance)
-gadm1_90_90 <- thinnedSpatialPoly(gadm1_90_90r, tolerance)
-gadm1_79_89 <- thinnedSpatialPoly(gadm1_79_89r, tolerance)
+gadm0 <- thin_polygons(gadm0r, tolerance)
+gadm1_08_20 <- thin_polygons(gadm1_08_20r, tolerance)
+gadm1_04_07 <- thin_polygons(gadm1_04_07r, tolerance)
+gadm1_97_03 <- thin_polygons(gadm1_97_03r, tolerance)
+gadm1_92_96 <- thin_polygons(gadm1_92_96r, tolerance)
+gadm1_91_91 <- thin_polygons(gadm1_91_91r, tolerance)
+gadm1_90_90 <- thin_polygons(gadm1_90_90r, tolerance)
+gadm1_79_89 <- thin_polygons(gadm1_79_89r, tolerance)
 
-# Defining the same boundaries box for all years: ------------------------------
 
-boundbox <- bbox(gadm1_04_07)
-gadm1_08_20r@bbox <- gadm1_97_03r@bbox <- gadm1_92_96r@bbox <- boundbox
-gadm1_91_91r@bbox <- gadm1_90_90r@bbox <- gadm1_79_89r@bbox <- boundbox
-gadm1_04_07r@bbox <- gadm1_08_20@bbox  <- gadm1_97_03@bbox  <- boundbox
-gadm1_92_96@bbox  <- gadm1_91_91@bbox  <- gadm1_90_90@bbox  <- boundbox
-gadm1_79_89@bbox  <- boundbox
+# Defining the same boundaries box and projections for all years: --------------
 
-# Defining the same projections for all map objects: ---------------------------
+boundbox <- st_bbox(gadm1_04_07)
+crs <- st_crs(gadm1_04_07)
 
-pj <- proj4string(gadm1_04_07)
-proj4string(gadm1_79_89)  <- proj4string(gadm1_90_90)  <- proj4string(gadm1_91_91)  <- pj
-proj4string(gadm1_92_96)  <- proj4string(gadm1_97_03)  <- proj4string(gadm1_08_20)  <- pj
-proj4string(gadm1_04_07r) <- proj4string(gadm1_79_89r) <- proj4string(gadm1_90_90r) <- pj
-proj4string(gadm1_91_91r) <- proj4string(gadm1_92_96r) <- proj4string(gadm1_97_03r) <- pj
-proj4string(gadm1_08_20r) <- pj
+gadm1_08_20r %<>% define_bbox_proj(boundbox, crs)
+gadm1_04_07r %<>% define_bbox_proj(boundbox, crs)
+gadm1_97_03r %<>% define_bbox_proj(boundbox, crs)
+gadm1_92_96r %<>% define_bbox_proj(boundbox, crs)
+gadm1_91_91r %<>% define_bbox_proj(boundbox, crs)
+gadm1_90_90r %<>% define_bbox_proj(boundbox, crs)
+gadm1_79_89r %<>% define_bbox_proj(boundbox, crs)
+gadm1_08_20 %<>% define_bbox_proj(boundbox, crs)
+gadm1_97_03 %<>% define_bbox_proj(boundbox, crs)
+gadm1_92_96 %<>% define_bbox_proj(boundbox, crs)
+gadm1_91_91 %<>% define_bbox_proj(boundbox, crs)
+gadm1_90_90 %<>% define_bbox_proj(boundbox, crs)
+gadm1_79_89 %<>% define_bbox_proj(boundbox, crs)
 
-# defining the maps with the Hanoi, Ha Tay, Hoa Binh, Hoa Son Binh merged: -----
+# Defining the maps with the Hanoi, Ha Tay, Hoa Binh, Hoa Son Binh merged: -----
 # these maps are useful in case of time series that start before 1992-01-01 and
 # end after 2007-12-31.
 
-prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_79_89$province)
-gadm1_79_89_hn <- unionSpatialPolygons(gadm1_79_89, prov)
-IDs <- sapply(gadm1_79_89_hn@polygons, function(x) x@ID)
-gadm1_79_89_hn <- SpatialPolygonsDataFrame(gadm1_79_89_hn,
-                                           data.frame(province = IDs,
-                                                      row.names = IDs))
-prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_90_90$province)
-gadm1_90_90_hn <- unionSpatialPolygons(gadm1_90_90, prov)
-IDs <- sapply(gadm1_90_90_hn@polygons, function(x) x@ID)
-gadm1_90_90_hn <- SpatialPolygonsDataFrame(gadm1_90_90_hn,
-                                           data.frame(province = IDs,
-                                                      row.names = IDs))
-prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_79_89r$province)
-gadm1_79_89r_hn <- unionSpatialPolygons(gadm1_79_89r, prov)
-IDs <- sapply(gadm1_79_89r_hn@polygons, function(x) x@ID)
-gadm1_79_89r_hn <- SpatialPolygonsDataFrame(gadm1_79_89r_hn,
-                                            data.frame(province = IDs,
-                                                       row.names = IDs))
-prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_90_90r$province)
-gadm1_90_90r_hn <- unionSpatialPolygons(gadm1_90_90r, prov)
-IDs <- sapply(gadm1_90_90r_hn@polygons, function(x) x@ID)
-gadm1_90_90r_hn <- SpatialPolygonsDataFrame(gadm1_90_90r_hn,
-                                            data.frame(province = IDs,
-                                                       row.names = IDs))
-prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_91_91$province)
-gadm1_91_91_hn <- unionSpatialPolygons(gadm1_91_91, prov)
-IDs <- sapply(gadm1_91_91_hn@polygons, function(x) x@ID)
-gadm1_91_91_hn <- SpatialPolygonsDataFrame(gadm1_91_91_hn,
-                                           data.frame(province = IDs,
-                                                      row.names = IDs))
-prov <- sub("^Ha Tay$", "Ha Noi", gadm1_92_96$province)
-gadm1_92_96_hn <- unionSpatialPolygons(gadm1_92_96, prov)
-IDs <- sapply(gadm1_92_96_hn@polygons, function(x) x@ID)
-gadm1_92_96_hn <- SpatialPolygonsDataFrame(gadm1_92_96_hn,
-                                           data.frame(province = IDs,
-                                                      row.names = IDs))
-prov <- sub("^Ha Tay$", "Ha Noi", gadm1_97_03$province)
-gadm1_97_03_hn <- unionSpatialPolygons(gadm1_97_03, prov)
-IDs <- sapply(gadm1_97_03_hn@polygons, function(x) x@ID)
-gadm1_97_03_hn <- SpatialPolygonsDataFrame(gadm1_97_03_hn,
-                                           data.frame(province = IDs,
-                                                      row.names = IDs))
-prov <- sub("^Ha Tay$", "Ha Noi", gadm1_04_07$province)
-gadm1_04_07_hn <- unionSpatialPolygons(gadm1_04_07, prov)
-IDs <- sapply(gadm1_04_07_hn@polygons, function(x) x@ID)
-gadm1_04_07_hn <- SpatialPolygonsDataFrame(gadm1_04_07_hn,
-                                           data.frame(province = IDs,
-                                                      row.names = IDs))
-prov <- sub("^Ha Son Binh$", "Ha Noi", gadm1_91_91r$province)                ###
-gadm1_91_91r_hn <- unionSpatialPolygons(gadm1_91_91r, prov)
-IDs <- sapply(gadm1_91_91r_hn@polygons, function(x) x@ID)
-gadm1_91_91r_hn <- SpatialPolygonsDataFrame(gadm1_91_91r_hn,
-                                            data.frame(province = IDs,
-                                                       row.names = IDs))
-prov <- sub("^Ha Tay$", "Ha Noi", gadm1_92_96r$province)
-gadm1_92_96r_hn <- unionSpatialPolygons(gadm1_92_96r, prov)
-IDs <- sapply(gadm1_92_96r_hn@polygons, function(x) x@ID)
-gadm1_92_96r_hn <- SpatialPolygonsDataFrame(gadm1_92_96r_hn,
-                                            data.frame(province = IDs,
-                                                       row.names = IDs))
-prov <- sub("^Ha Tay$", "Ha Noi", gadm1_97_03r$province)
-gadm1_97_03r_hn <- unionSpatialPolygons(gadm1_97_03r, prov)
-IDs <- sapply(gadm1_97_03r_hn@polygons, function(x) x@ID)
-gadm1_97_03r_hn <- SpatialPolygonsDataFrame(gadm1_97_03r_hn,
-                                            data.frame(province = IDs,
-                                                       row.names = IDs))
-prov <- sub("^Ha Tay$", "Ha Noi", gadm1_04_07r$province)
-gadm1_04_07r_hn <- unionSpatialPolygons(gadm1_04_07r, prov)
-IDs <- sapply(gadm1_04_07r_hn@polygons, function(x) x@ID)
-gadm1_04_07r_hn <- SpatialPolygonsDataFrame(gadm1_04_07r_hn,
-                                            data.frame(province = IDs,
-                                                       row.names = IDs))
-gadm1_79_89_hn <- spChFIDs(gadm1_79_89_hn, as.character(seq_len(length(gadm1_79_89_hn))))
-gadm1_90_90_hn <- spChFIDs(gadm1_90_90_hn, as.character(seq_len(length(gadm1_90_90_hn))))
-gadm1_91_91_hn <- spChFIDs(gadm1_91_91_hn, as.character(seq_len(length(gadm1_91_91_hn))))
-gadm1_92_96_hn <- spChFIDs(gadm1_92_96_hn, as.character(seq_len(length(gadm1_92_96_hn))))
-gadm1_97_03_hn <- spChFIDs(gadm1_97_03_hn, as.character(seq_len(length(gadm1_97_03_hn))))
-gadm1_04_07_hn <- spChFIDs(gadm1_04_07_hn, as.character(seq_len(length(gadm1_04_07_hn))))
-gadm1_79_89r_hn <- spChFIDs(gadm1_79_89r_hn, as.character(seq_len(length(gadm1_79_89r_hn))))
-gadm1_90_90r_hn <- spChFIDs(gadm1_90_90r_hn, as.character(seq_len(length(gadm1_90_90r_hn))))
-gadm1_91_91r_hn <- spChFIDs(gadm1_91_91r_hn, as.character(seq_len(length(gadm1_91_91r_hn))))
-gadm1_92_96r_hn <- spChFIDs(gadm1_92_96r_hn, as.character(seq_len(length(gadm1_92_96r_hn))))
-gadm1_97_03r_hn <- spChFIDs(gadm1_97_03r_hn, as.character(seq_len(length(gadm1_97_03r_hn))))
-gadm1_04_07r_hn <- spChFIDs(gadm1_04_07r_hn, as.character(seq_len(length(gadm1_04_07r_hn))))
-gadm1_79_89_hn@bbox  <- boundbox
-gadm1_90_90_hn@bbox  <- boundbox
-gadm1_91_91_hn@bbox  <- boundbox
-gadm1_92_96_hn@bbox  <- boundbox
-gadm1_97_03_hn@bbox  <- boundbox
-gadm1_04_07_hn@bbox  <- boundbox
-gadm1_79_89r_hn@bbox  <- boundbox
-gadm1_90_90r_hn@bbox  <- boundbox
-gadm1_91_91r_hn@bbox  <- boundbox
-gadm1_92_96r_hn@bbox  <- boundbox
-gadm1_97_03r_hn@bbox  <- boundbox
-gadm1_04_07r_hn@bbox  <- boundbox
-proj4string(gadm1_79_89_hn) <- pj
-proj4string(gadm1_90_90_hn) <- pj
-proj4string(gadm1_91_91_hn) <- pj
-proj4string(gadm1_92_96_hn) <- pj
-proj4string(gadm1_97_03_hn) <- pj
-proj4string(gadm1_04_07_hn) <- pj
-proj4string(gadm1_79_89r_hn) <- pj
-proj4string(gadm1_90_90r_hn) <- pj
-proj4string(gadm1_91_91r_hn) <- pj
-proj4string(gadm1_92_96r_hn) <- pj
-proj4string(gadm1_97_03r_hn) <- pj
-proj4string(gadm1_04_07r_hn) <- pj
+gadm1_79_89_hn <- merge_hanoi(gadm1_79_89) %>% define_bbox_proj(boundbox, crs)
+gadm1_79_89r_hn <- merge_hanoi(gadm1_79_89r) %>% define_bbox_proj(boundbox, crs)
+gadm1_90_90_hn <- merge_hanoi(gadm1_90_90) %>% define_bbox_proj(boundbox, crs)
+gadm1_90_90r_hn <- merge_hanoi(gadm1_90_90r) %>% define_bbox_proj(boundbox, crs)
+gadm1_91_91_hn <- merge_hanoi(gadm1_91_91) %>% define_bbox_proj(boundbox, crs)
+gadm1_91_91r_hn <- merge_hanoi(gadm1_91_91r) %>% define_bbox_proj(boundbox, crs)
+gadm1_92_96_hn <- merge_hanoi(gadm1_92_96) %>% define_bbox_proj(boundbox, crs)
+gadm1_92_96r_hn <- merge_hanoi(gadm1_92_96r) %>% define_bbox_proj(boundbox, crs)
+gadm1_97_03_hn <- merge_hanoi(gadm1_97_03) %>% define_bbox_proj(boundbox, crs)
+gadm1_97_03r_hn <- merge_hanoi(gadm1_97_03r) %>% define_bbox_proj(boundbox, crs)
+gadm1_04_07_hn <- merge_hanoi(gadm1_04_07) %>% define_bbox_proj(boundbox, crs)
+gadm1_04_07r_hn <- merge_hanoi(gadm1_04_07r) %>% define_bbox_proj(boundbox, crs)
 
-# Defining the ecologic regions: -----------------------------------------------
+# Defining the ecologic and economic regions: ----------------------------------
 
-regions <- read.table("data-raw/provinces_wikipedia.txt", sep = "\t",
-                      stringsAsFactors = FALSE)[, c(1, 7)]
-names(regions) <- c("province", "region")
-regions[, 1] <- sub(" Province", "", regions[, 1])
-regions[, 1] <- sub(" City", "", regions[, 1])
-colors <- list(Northwest             = c(243, 225,   0),
-               Northeast             = c(255, 175,  26),
-               "Red River Delta"     = c(255, 103, 103),
-               "North Central Coast" = c(  0, 214,   0),
-               "South Central Coast" = c(  0, 221, 217),
-               "Central Highlands"   = c( 36, 135, 255),
-               Southeast             = c(195,  36, 255),
-               "Mekong Delta"        = c(255,  36, 196))
-colors <- sapply(colors, function(x) rgb(x[1], x[2], x[3], max = 255))
-regions$color_ecologic <- colors[regions$region]
-# adding the economic regions:
-economic <- gsub("North Central Coast", "Central Coast", regions$region)
-economic <- gsub("South Central Coast", "Central Coast", economic)
-economic <- gsub("Northeast", "Northern Midlands & Mountains", economic)
-economic <- gsub("Northwest", "Northern Midlands & Mountains", economic)
-economic[regions$province == "Quang Ninh"] <- "Red River Delta"
-regions$region_economic <- economic
-colors <- list("Northern Midlands & Mountains" = c(243, 225,   0),
+colors_reg <- list(Northwest = c(243, 225, 0),
+                   Northeast = c(255, 175, 26),
+                   "Red River Delta" = c(255, 103, 103),
+                   "North Central Coast" = c(0, 214, 0),
+                   "South Central Coast" = c(0, 221, 217),
+                   "Central Highlands" = c(36, 135, 255),
+                   Southeast  = c(195, 36, 255),
+                   "Mekong Delta" = c(255, 36, 196))
+colors_reg <- sapply(colors_reg,
+                     function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
+
+colors_eco <- list("Northern Midlands & Mountains" = c(243, 225,   0),
                "Red River Delta"               = c(255, 103, 103),
                "Central Coast"                 = c(  0, 214,   0),
                "Central Highlands"             = c( 36, 135, 255),
                Southeast                       = c(195,  36, 255),
                "Mekong Delta"                  = c(255,  36, 196))
-colors <- sapply(colors, function(x) rgb(x[1], x[2], x[3], max = 255))
-regions$color_economic <- colors[regions$region_economic]
-names(regions) <- gsub("^region$", "region_ecologic", names(regions))
-gadm1_08_20 <- merge(gadm1_08_20, regions)
-gadm1_08_20r <- merge(gadm1_08_20r, regions)
+colors_eco <- sapply(colors_eco,
+                     function(x) rgb(x[1], x[2], x[3], max = 255))
 
+regions <- read.table("data-raw/provinces_wikipedia.txt", sep = "\t",
+                      stringsAsFactors = FALSE)[, c(1, 7)] %>%
+  rename(province = V1, region = V7) %>%
+  mutate(province = gsub(" Province| City", "", province) %>%
+           stringi::stri_escape_unicode(.) %>%
+           vn_province[.],
+         colors_ecologic = colors_reg[region],
+         region_economic = region %>%
+           gsub("North |South ", "", .) %>%
+           gsub("^North....", "Northern Midlands & Mountains", .)
+         )
+
+regions[regions$province == "Quang Ninh", "region_economic"] <-
+  "Red River Delta"
+
+regions %<>% mutate(color_economic = colors_eco[region_economic])
+
+gadm1_08_20 %<>% left_join(regions, by = "province") %>% arrange(province)
+gadm1_08_20r %<>% left_join(regions, by = "province") %>% arrange(province)
+
+# Defining population centroid -------------------------------------------------
+
+gadm1_08_20 %<>% as_Spatial() %>%
+  sptools::as_list() %>%
+  purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
+  purrr::map(raster::rasterToPoints, spatial = TRUE) %>%
+  purrr::map(weighted_centroid) %>%
+  purrr::reduce(bind_rows) %>%
+  mutate(province = gadm1_08_20$province) %>%
+  left_join(gadm1_08_20r, ., by = "province") %>%
+  select("province", everything())
+
+gadm1_08_20r %<>% as_Spatial() %>%
+  sptools::as_list() %>%
+  purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
+  purrr::map(raster::rasterToPoints, spatial = TRUE) %>%
+  purrr::map(weighted_centroid) %>%
+  purrr::reduce(bind_rows) %>%
+  mutate(province = gadm1_08_20r$province) %>%
+  left_join(gadm1_08_20r, ., by = "province") %>%
+  select("province", everything())
 
 # Saving -----------------------------------------------------------------------
 
@@ -390,7 +197,6 @@ eply::evals(paste0("devtools::use_data(",
             paste(grep("gadm\\d", ls(), value = TRUE), collapse = ", "),
             ", internal = TRUE, overwrite = TRUE)"))
 
+# erase everything #############################################################
 
-
-
-
+rm(list = ls())
