@@ -173,7 +173,8 @@ gadm1_08_20r %<>% left_join(regions, by = "province") %>% arrange(province)
 
 gadm1_08_20 %<>% as_Spatial() %>%
   sptools::as_list() %>%
-  purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
+  parallel::mclapply(sptools::crop_on_poly, rstr = worldpopVN::getpop()) %>%
+  #purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
   purrr::map(raster::rasterToPoints, spatial = TRUE) %>%
   purrr::map(weighted_centroid) %>%
   purrr::reduce(bind_rows) %>%
@@ -183,7 +184,8 @@ gadm1_08_20 %<>% as_Spatial() %>%
 
 gadm1_08_20r %<>% as_Spatial() %>%
   sptools::as_list() %>%
-  purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
+  parallel::mclapply(sptools::crop_on_poly, rstr = worldpopVN::getpop()) %>%
+  #purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
   purrr::map(raster::rasterToPoints, spatial = TRUE) %>%
   purrr::map(weighted_centroid) %>%
   purrr::reduce(bind_rows) %>%
