@@ -17,8 +17,6 @@
 #'   color_ecologic \tab color associated with the ecologic region \cr
 #'   region_economic \tab name of the region economic in English  \cr
 #'   color_economic \tab color associated with the economic region\cr
-#'   x \tab  longitude of the population weighted centroid of the province \cr
-#'   y \tab latitude of the population weighted centroid of the province \cr
 #'   geometry \tab list-column with geometries \cr
 #'  }
 #'  Wheras the map generated for a time before 2008, only the columns
