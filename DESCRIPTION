@@ -14,7 +14,7 @@ Description: Contains the country and provinces maps of Vietnam from GADM (versi
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: TRUE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Imports:
     sp
 Depends:
