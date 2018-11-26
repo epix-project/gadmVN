@@ -169,30 +169,6 @@ regions %<>% mutate(color_economic = colors_eco[region_economic])
 gadm1_08_20 %<>% left_join(regions, by = "province") %>% arrange(province)
 gadm1_08_20r %<>% left_join(regions, by = "province") %>% arrange(province)
 
-# Defining population centroid -------------------------------------------------
-
-gadm1_08_20 %<>% as_Spatial() %>%
-  sptools::as_list() %>%
-  parallel::mclapply(sptools::crop_on_poly, rstr = worldpopVN::getpop()) %>%
-  #purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
-  purrr::map(raster::rasterToPoints, spatial = TRUE) %>%
-  purrr::map(weighted_centroid) %>%
-  purrr::reduce(bind_rows) %>%
-  mutate(province = gadm1_08_20$province) %>%
-  left_join(gadm1_08_20r, ., by = "province") %>%
-  select("province", everything())
-
-gadm1_08_20r %<>% as_Spatial() %>%
-  sptools::as_list() %>%
-  parallel::mclapply(sptools::crop_on_poly, rstr = worldpopVN::getpop()) %>%
-  #purrr::map(crop_on_poly, rstr = worldpopVN::getpop()) %>%
-  purrr::map(raster::rasterToPoints, spatial = TRUE) %>%
-  purrr::map(weighted_centroid) %>%
-  purrr::reduce(bind_rows) %>%
-  mutate(province = gadm1_08_20r$province) %>%
-  left_join(gadm1_08_20r, ., by = "province") %>%
-  select("province", everything())
-
 # Saving -----------------------------------------------------------------------
 
 eply::evals(paste0("devtools::use_data(",
