@@ -38,10 +38,10 @@ merge_hanoi <- function(sf_obj){
 # Downloading the actual country and provinces maps from GADM (www.gadm.org) ---
 
 # Actual administrative boundaries:
-gadm0r <- sptools::gadm("Vietnam", "sf", 0, path = FALSE, intlib = FALSE) %>%
+gadm0r <- sptools::gadm("Vietnam", "sf", 0, save = FALSE, intlib = FALSE) %>%
   select(-GID_0) %>%
   rename(country = NAME_0)
-gadm1_08_20r <- sptools::gadm("Vietnam", "sf", 1, path = FALSE, intlib = FALSE)
+gadm1_08_20r <- sptools::gadm("Vietnam", "sf", 1, save = FALSE, intlib = FALSE)
 
 # Coming from old gadm file:
 gadm1_04_07r <- readRDS("data-raw/gadm_vn_0407.rds")  # the 64 provinces from 2004 to 2007
