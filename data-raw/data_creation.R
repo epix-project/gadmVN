@@ -49,12 +49,12 @@ gadm1_04_07r <- readRDS("data-raw/gadm_vn_0407.rds")  # the 64 provinces from 20
 # Translate the province from Vietnamese to a column "province" in English -----
 gadm1_08_20r %<>%
   mutate(province = stringi::stri_escape_unicode(NAME_1) %>%
-           vn_province[.]) %>%
+           vn_admin1[.]) %>%
   select(province, geometry)
 
 gadm1_04_07r %<>%
   mutate(province = stringi::stri_escape_unicode(NAME_2) %>%
-           vn_province[.]) %>%
+           vn_admin1[.]) %>%
   select(province, geometry)
 
 
@@ -72,13 +72,13 @@ gadm1_79_89r <- sf_aggregate_lst(gadm1_04_07r, vn_history, from = "1979",
                                  to = "2004")
 
 # tests if province are corresponding
-setdiff(gadm1_79_89r$province, vn_province_year$`1979-1990`)
-setdiff(gadm1_90_90r$province, vn_province_year$`1990-1991`)
-setdiff(gadm1_91_91r$province, vn_province_year$`1991-1992`)
-setdiff(gadm1_92_96r$province, vn_province_year$`1992-1997`)
-setdiff(gadm1_97_03r$province, vn_province_year$`1997-2004`)
-setdiff(gadm1_04_07r$province, vn_province_year$`2004-2008`)
-setdiff(gadm1_08_20r$province, vn_province_year$`2008-2020`)
+setdiff(gadm1_79_89r$province, vn_admin1_year$`1979-1990`)
+setdiff(gadm1_90_90r$province, vn_admin1_year$`1990-1991`)
+setdiff(gadm1_91_91r$province, vn_admin1_year$`1991-1992`)
+setdiff(gadm1_92_96r$province, vn_admin1_year$`1992-1997`)
+setdiff(gadm1_97_03r$province, vn_admin1_year$`1997-2004`)
+setdiff(gadm1_04_07r$province, vn_admin1_year$`2004-2008`)
+setdiff(gadm1_08_20r$province, vn_admin1_year$`2008-2020`)
 
 # Thinning ---------------------------------------------------------------------
 
