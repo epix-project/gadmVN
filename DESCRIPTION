@@ -13,17 +13,16 @@ Authors@R: c(person("Marc", "Choisy",
 Description: Contains the country and provinces maps of Vietnam from GADM (version 3.6).
 License: MIT + file LICENSE
 URL: https://github.com/choisy/gadmVN
-BugReports: https://github.com/choisy/dictionary/gadmVN
+BugReports: https://github.com/choisy/gadmVN/issues
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 6.1.1
-Imports:
-    sp
 Depends:
   R (>= 2.10)
 Suggests: 
     knitr,
     rmarkdown,
     sf,
+    sp,
     testthat
 VignetteBuilder: knitr
