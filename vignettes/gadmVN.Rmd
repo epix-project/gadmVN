@@ -62,7 +62,7 @@ pr <- gadm(1992)
 Maping 4 categories of provinces according to latitude:
 
 ```{r}
-latitudes <- sapply(seq_len(dim(pr)[1]), FUN = function(x) st_coordinates(pr[x,])[, 2] %>% mean())
+latitudes <- sapply(seq_len(dim(pr)[1]), FUN = function(x) mean(st_coordinates(pr[x,])[, 2]))
 breaks <- seq(min(latitudes), max(latitudes), le = 5)
 palette <- c("red", "blue", "green", "orange")
 colors <- palette[as.numeric(cut(latitudes, breaks, include = TRUE))]
