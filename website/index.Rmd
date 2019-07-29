@@ -56,19 +56,23 @@ pr <- gadm(1992)
 Maping 4 categories of provinces according to latitude:
 
 ```{r}
-latitudes <- coordinates(pr)[, 2]
+library(sf) # for the "st_coordinates"  and "st_geometry" functions
+latitudes <- test <- as.data.frame(st_coordinates(pr)[, c(2,5)],
+                                   stringsAsFactors = FALSE)
+latitudes <- sapply(split(latitudes, as.factor(latitudes$L3)),
+                    function(x) mean(x[, "Y"]))
 breaks <- seq(min(latitudes), max(latitudes), le = 5)
 palette <- c("red", "blue", "green", "orange")
 colors <- palette[as.numeric(cut(latitudes, breaks, include = TRUE))]
-plot(pr, col = colors)
+plot(st_geometry(pr), col = colors)
 ```
 
 Plotting the 8 regions of Vietnam:
 
 ```{r}
 provinces <- gadm()
-plot(provinces, col = provinces$color)
-leg <- unique(provinces@data[, c("region", "color")])
-legend("topright", legend = leg$region, fill = leg$color, bty = "n")
+plot(st_geometry(provinces), col = provinces$colors_ecologic)
+leg <- as.data.frame(provinces[, c("region", "colors_ecologic")])
+leg <- unique(leg[, which(names(leg) != "geometry")])
+legend("topleft", legend = leg$region, fill = leg$colors_ecologic, bty = "n")
 ```
-
