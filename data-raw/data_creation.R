@@ -199,9 +199,9 @@ gadm1_08_20r <- merge(gadm1_08_20r, mics_regions)
 
 # Saving -----------------------------------------------------------------------
 
-eply::evals(paste0("usethis::use_data(",
+eval(parse(text = paste0("usethis::use_data(",
                    paste(grep("gadm\\d", ls(), value = TRUE), collapse = ", "),
-                   ", internal = TRUE, overwrite = TRUE)"))
+                   ", internal = TRUE, overwrite = TRUE)")))
 
 # erase everything #############################################################
 
