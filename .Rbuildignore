@@ -3,3 +3,6 @@
 data-raw
 docs
 website
+^\.travis\.yml$
+^codecov\.yml$
+^appveyor\.yml$

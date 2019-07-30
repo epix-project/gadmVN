@@ -1,5 +1,9 @@
 # gadmVN 
 
+[![Travis build status](https://travis-ci.org/epix-project/gadmVN.svg?branch=master)](https://travis-ci.org/epix-project/gadmVN)
+[![Codecov test coverage](https://codecov.io/gh/epix-project/gadmVN/branch/master/graph/badge.svg)](https://codecov.io/gh/epix-project/gadmVN?branch=master)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/epix-project/gadmVN?branch=master&svg=true)](https://ci.appveyor.com/project/epix-project/gadmVN)
+
 This package contains the polygons of Vietnam and its provinces at different
 points in time since 1979, reflecting the changes in the administrative
 divisions along the history of Vietnam.
