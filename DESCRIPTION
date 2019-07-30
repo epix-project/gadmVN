@@ -24,5 +24,6 @@ Suggests:
     rmarkdown,
     sf,
     sp,
-    testthat
+    testthat,
+    covr
 VignetteBuilder: knitr
