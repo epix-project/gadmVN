@@ -192,6 +192,11 @@ regions <- transform(regions,
 gadm1_08_20 <- merge(gadm1_08_20, regions, stringsAsFactors = FALSE)
 gadm1_08_20r <- merge(gadm1_08_20r, regions, stringsAsFactors = FALSE)
 
+# adding the MICS regions:
+mics_regions <- read.csv("data-raw/mics_region.csv", stringsAsFactors = FALSE)
+gadm1_08_20 <- merge(gadm1_08_20, mics_regions)
+gadm1_08_20r <- merge(gadm1_08_20r, mics_regions)
+
 # Saving -----------------------------------------------------------------------
 
 eval(parse(text = paste0("usethis::use_data(",
