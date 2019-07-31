@@ -150,26 +150,6 @@ gadm1_79_89_hn <- rename_col(gadm1_79_89_hn)
 
 # Defining the ecologic and economic regions: ----------------------------------
 
-colors_reg <- list(Northwest = c(243, 225, 0),
-                   Northeast = c(255, 175, 26),
-                   "Red River Delta" = c(255, 103, 103),
-                   "North Central Coast" = c(0, 214, 0),
-                   "South Central Coast" = c(0, 221, 217),
-                   "Central Highlands" = c(36, 135, 255),
-                   Southeast  = c(195, 36, 255),
-                   "Mekong Delta" = c(255, 36, 196))
-colors_reg <- sapply(colors_reg,
-                     function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
-
-colors_eco <- list("Northern Midlands & Mountains" = c(243, 225,   0),
-                   "Red River Delta"               = c(255, 103, 103),
-                   "Central Coast"                 = c(  0, 214,   0),
-                   "Central Highlands"             = c( 36, 135, 255),
-                   Southeast                       = c(195,  36, 255),
-                   "Mekong Delta"                  = c(255,  36, 196))
-colors_eco <- sapply(colors_eco,
-                     function(x) rgb(x[1], x[2], x[3], max = 255))
-
 regions <- read.table("data-raw/provinces_wikipedia.txt", sep = "\t",
                       stringsAsFactors = FALSE)[, c(1, 7)]
 colnames(regions)[colnames(regions) == "V1"] <- "province"
@@ -178,16 +158,12 @@ regions <- transform(regions,
                      province =
                        translate(gsub(" Province| City", "", regions$province),
                                  vn_admin1),
-                     colors_ecologic = colors_reg[regions$region],
                      region_economic =
                        gsub("^North....", "Northern Midlands & Mountains",
                             gsub("North |South ", "", regions$region)))
 
 regions[regions$province == "Quang Ninh", "region_economic"] <-
   "Red River Delta"
-
-regions <- transform(regions,
-                     color_economic = colors_eco[regions$region_economic])
 
 gadm1_08_20 <- merge(gadm1_08_20, regions, stringsAsFactors = FALSE)
 gadm1_08_20r <- merge(gadm1_08_20r, regions, stringsAsFactors = FALSE)

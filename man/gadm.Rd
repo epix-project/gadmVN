@@ -42,9 +42,8 @@ The maps generated for a time after 2008 contained different information:
   Column Names \tab Description \cr
   province \tab name of the province in English \cr
   region \tab name of the ecologic region in English \cr
-  color_ecologic \tab color associated with the ecologic region \cr
   region_economic \tab name of the region economic in English  \cr
-  color_economic \tab color associated with the economic region\cr
+  mics_region \tab name of the mics region in English \cr
   geometry \tab list-column with geometries \cr
  }
  Wheras the map generated for a time before 2008, only the columns
