@@ -71,8 +71,5 @@ Plotting the 8 regions of Vietnam:
 
 ```{r}
 provinces <- gadm()
-plot(st_geometry(provinces), col = provinces$colors_ecologic)
-leg <- as.data.frame(provinces[, c("region", "colors_ecologic")])
-leg <- unique(leg[, which(names(leg) != "geometry")])
-legend("topleft", legend = leg$region, fill = leg$colors_ecologic, bty = "n")
+plot(provinces["region"])
 ```
