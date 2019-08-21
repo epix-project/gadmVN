@@ -12,7 +12,7 @@ recent polygons by merging and splitting events.
 
 ## Installation and loading
 
-You can install `gadmVN` from GitHub with:
+You can install `gadmVN` from [GitHub](https://github.com/epix-project/gadmVN) with:
 
 ```{r eval = FALSE}
 # install.packages("devtools")
