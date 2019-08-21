@@ -14,7 +14,7 @@ You can install `gadmVN` from GitHub with:
 
 ```{r eval = FALSE}
 # install.packages("devtools")
-devtools::install_github("choisy/gadmVN", build_vignettes = TRUE)
+devtools::install_github("epix-project/gadmVN", build_vignettes = TRUE)
 ```
 
 Once installed, you can load the package:
