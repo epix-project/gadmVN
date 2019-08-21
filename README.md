@@ -6,7 +6,9 @@
 
 This package contains the polygons of Vietnam and its provinces at different
 points in time since 1979, reflecting the changes in the administrative
-divisions along the history of Vietnam.
+divisions along the history of Vietnam. Recent polygons are taken from
+[GADM](https://gadm.org), polygons from other periods are computed from these
+recent polygons by merging and splitting events. 
 
 ## Installation and loading
 
